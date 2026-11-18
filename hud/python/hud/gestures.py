@@ -231,7 +231,7 @@ WAKE_PENDING_FIST = 3.0   # s: a fist held longer than this is resting (a chin o
 WAKE_AFTER_CLOSE = 1.2    # s after a close gesture before a wake gesture counts
 WAKE_UNBLOCK = 0.5        # the fist that closed the HUD counts as released once the hand is this open
 CLOSE_FROM = 0.95         # close: from 95% open or more...
-CLOSE_TO = 0.04           # ...to 4% open or less (a full fist: real fists read 0-3%; a hand curled
+CLOSE_TO = 0.05           # ...to 5% open or less (a full fist: real fists read 0-3%; a hand curled
                           # two-thirds to three-quarters of the way reads 6-12%, and must not close)...
 CLOSE_WITHIN = 1.5        # ...within this many seconds...
 CLOSE_HOLD = 0.0          # no hold: closes once the fist reads two frames in a row
@@ -274,6 +274,11 @@ WAVE_FACING_LAST = 1      # the wave fires only on a frame with the palm facing 
                           # detections alternate palm / back, so two facing frames in a row cut real waves)
 FIST_FACING_LAST = 3      # fist -> open: the open hand's last 3 frames (fist frames before them do not
                           # count) face the camera, so one noisy frame right after the fist cannot wake
+FIST_AWAY_MAX = 0.35      # fist -> open: s in all the open hand may be turned away (|yaw| > FACING_YAW) since
+                          # the fist, so a hand held open sideways or back-on that comes round to the camera
+                          # for its last frames (moving into frame) cannot wake, while one that opens edge-on
+                          # and turns at once still does (~0.2 s). Real-use logs (Nov 2026): real wakes |yaw|
+                          # median 2-28; the false one 62 (palm facing 3 of 14 open frames, its last 3: ~0.5 s away)
 
 
 # The gestures that can be turned off: GestureEngine attribute -> config.json key.
@@ -635,7 +640,8 @@ class GestureEngine:
             self.wf_ok = False  # opened too late
         if (self.wf_ok and o.openness >= WAKE_OPEN and t - self.last_sleep > WAKE_AFTER_CLOSE
                 and self._open_frames_real(t)
-                and self._sure("fist", "wake", self.wf_start, t, FIST_MIN_FRAMES, 0.0, FIST_FACING_LAST)):
+                and self._sure("fist", "wake", self.wf_start, t, FIST_MIN_FRAMES, 0.0, FIST_FACING_LAST,
+                               away_max=FIST_AWAY_MAX)):
             self.wf_ok = False
             events.append("wake")
             self.last_wake = t
@@ -677,11 +683,13 @@ class GestureEngine:
             out.append((yaw, pitch))
         return out
 
-    def palm_check(self, since: float, t: float, share: float, last: int, cycles=()):
+    def palm_check(self, since: float, t: float, share: float, last: int, cycles=(), away_max=None):
         """Whether the palm faces the camera enough over the frames from since to t: on at
         least `share` of the frames that are not fists, on each of the last `last` frames that
-        are not fists (the newest frame must be one of them: a fist shows no palm) and at least
-        once in each of `cycles` ((start, end) times: a wave's there-and-back swings).
+        are not fists (the newest frame must be one of them: a fist shows no palm), at least
+        once in each of `cycles` ((start, end) times: a wave's there-and-back swings) and, if
+        `away_max` is given, with those frames turned away (|yaw| > FACING_YAW) for at most
+        that many seconds in all (each frame counts until the next, at most MAX_GAP).
         Returns (ok, description for the log)."""
         frames = self._frames(since, t)
         if not frames:
@@ -704,9 +712,16 @@ class GestureEngine:
                       f"pitch median {ps[len(ps) // 2]:+.0f} ({ps[0]:+.0f}..{ps[-1]:+.0f})")
         else:
             spread = "orientation unknown"
+        away_ok = True
+        if away_max is not None:
+            away = sum(min(MAX_GAP, (frames[i + 1].t if i + 1 < len(frames) else f.t) - f.t)
+                       for i, (a, f) in enumerate(zip(angles, frames))
+                       if not f.fist and a[0] is not None and abs(a[0]) > FACING_YAW)
+            away_ok = away <= away_max
+            spread += f", turned away {away:.2f}s (needs <= {away_max:.2f}s)"
         ny, np_ = angles[-1]
         now = f"{ny:+.0f}/{np_:+.0f}" if ny is not None else "unknown"
-        ok = (got >= share if open_ else share <= 0) and end_ok and shown == len(cycles)
+        ok = (got >= share if open_ else share <= 0) and end_ok and shown == len(cycles) and away_ok
         if not (share or last or cycles):
             return ok, f"palm not required (a fist shows none), yaw/pitch now {now}"
         desc = (f"palm facing {facing} of {len(open_)} open frames ({got:.0%}, needs {share:.0%}), "
@@ -717,12 +732,12 @@ class GestureEngine:
         return ok, desc
 
     def _sure(self, gesture: str, what: str, since: float, t: float, min_good: int,
-              share: float = 0.0, last: int = 0, cycles=()) -> bool:
+              share: float = 0.0, last: int = 0, cycles=(), away_max=None) -> bool:
         """Whether a wake / prewake candidate is confident enough and shows the palm (see
         palm_check); notes the decision (accepted ones always, rejected ones at most every
         NOTE_EVERY seconds)."""
         conf, good, n, detail = self.wake_confidence(since, t)
-        palm_ok, palm = self.palm_check(since, t, share, last, cycles)
+        palm_ok, palm = self.palm_check(since, t, share, last, cycles, away_max)
         ok = conf >= WAKE_CONFIDENCE and good >= min_good and palm_ok
         key = (what, gesture)
         last_note, skipped = self._noted.get(key, (-1e9, 0))
