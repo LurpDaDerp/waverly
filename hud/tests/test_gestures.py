@@ -166,7 +166,8 @@ def wake_run(frames):
 
 w = wake_run([(FIST, 0.10, 0.5, 5), (OTHER, 0.6, 0.5, 15), (PALM, 0.98, 0.5, 5)])
 check("wake: fist 0.15 s -> open 98% after 0.5 s", w == ["prewake", "wake"], w)
-check("wake: fist only 0.07 s -> nothing", wake_run([(FIST, 0.10, 0.5, 2), (PALM, 0.98, 0.5, 5)]) == [])
+w = wake_run([(FIST, 0.10, 0.5, 2), (PALM, 0.98, 0.5, 5)])
+check("wake: fist only 0.07 s -> wake (no hold; too short for a prewake)", w == ["wake"], w)
 w = wake_run([(FIST, 0.10, 0.5, 6), (OTHER, 0.6, 0.5, 51), (PALM, 0.98, 0.5, 5)])
 check("wake: opened after 1.7 s -> prewake only", w == ["prewake"], w)
 w = wake_run([(FIST, 0.10, 0.5, 6), (PALM, 0.9, 0.5, 20)])
@@ -262,7 +263,7 @@ w, _ = asleep_run([(0.5, FIST, 0.05, 0.9, 1, 1), (0.5, None, 0, 0, 0, 45), (0.5,
 check("one-frame flickers: fist, 1.5 s later fist, then open -> nothing", w == [], w)
 w, _ = asleep_run([(0.5, FIST, 0.05, 0.9, 1, 2), (0.5, None, 0, 0, 0, 18), (0.5, FIST, 0.05, 0.9, 1, 2),
                    (0.5, PALM, 0.98, 0.9, 1, 3)])
-check("a fist that drops out of view for 0.6 s does not count as held", "wake" not in w, w)
+check("a fist that drops out of view for 0.6 s, then a 2-frame fist -> open: wakes (no hold)", w == ["wake"], w)
 w, _ = asleep_run([(0.5, FIST, 0.05, 0.9, 1, 2), (0.5, PALM, 0.98, 0.9, 1, 1)], fps=8)
 check("a 3-frame fist -> open burst (8 fps) that vanishes (too few frames) -> no wake", "wake" not in w, w)
 w, _ = asleep_run([(0.5, FIST, 0.05, 0.9, 1, 2), (0.5, PALM, 0.98, 0.9, 1, 1), (0.5, None, 0, 0, 0, 2),
