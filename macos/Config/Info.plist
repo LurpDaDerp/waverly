@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <key>CFBundleDevelopmentRegion</key>    <string>en</string>
+    <key>CFBundleDisplayName</key>          <string>Waverly</string>
+    <key>CFBundleExecutable</key>           <string>$(EXECUTABLE_NAME)</string>
+    <key>CFBundleIconFile</key>             <string>AppIcon</string>
+    <key>CFBundleIdentifier</key>           <string>$(PRODUCT_BUNDLE_IDENTIFIER)</string>
+    <key>CFBundleInfoDictionaryVersion</key><string>6.0</string>
+    <key>CFBundleName</key>                 <string>Waverly</string>
+    <key>CFBundlePackageType</key>          <string>APPL</string>
+    <key>CFBundleShortVersionString</key>   <string>$(MARKETING_VERSION)</string>
+    <key>CFBundleVersion</key>              <string>$(CURRENT_PROJECT_VERSION)</string>
+    <key>LSApplicationCategoryType</key>    <string>public.app-category.productivity</string>
+    <key>LSMinimumSystemVersion</key>       <string>$(MACOSX_DEPLOYMENT_TARGET)</string>
+    <key>LSArchitecturePriority</key>       <array><string>arm64</string></array>
+    <key>NSPrincipalClass</key>             <string>NSApplication</string>
+    <key>NSHighResolutionCapable</key>      <true/>
+    <key>NSHumanReadableCopyright</key>     <string>Waverly</string>
+    <!-- menu bar app: no Dock icon, no app menu -->
+    <key>LSUIElement</key>                  <true/>
+    <!-- no Video Effects reactions (balloons, confetti…) when a hand gesture looks like a thumbs-up or peace sign -->
+    <key>NSCameraReactionEffectGesturesEnabledDefault</key><false/>
+    <!-- permission prompt texts -->
+    <key>NSCameraUsageDescription</key>
+    <string>Waverly watches for your hand gestures (fist, open hand, wave, scroll) to open, close and scroll it. Video never leaves this Mac.</string>
+    <key>NSLocationUsageDescription</key>
+    <string>Waverly uses your location to show local weather. It is rounded to about 10 km before it is sent to the weather service.</string>
+    <key>NSLocationWhenInUseUsageDescription</key>
+    <string>Waverly uses your location to show local weather. It is rounded to about 10 km before it is sent to the weather service.</string>
+    <!-- the page and the WebSocket hub are served by hud-core on 127.0.0.1 over plain http/ws -->
+    <key>NSAppTransportSecurity</key>
+    <dict>
+        <key>NSAllowsLocalNetworking</key>  <true/>
+    </dict>
+    <!-- Google sign-in client, from Secrets.xcconfig at build time (empty: the user chooses their own) -->
+    <key>HUGoogleClientID</key>             <string>$(GOOGLE_CLIENT_ID)</string>
+    <key>HUGoogleClientSecret</key>         <string>$(GOOGLE_CLIENT_SECRET)</string>
+</dict>
+</plist>

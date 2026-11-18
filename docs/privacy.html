@@ -1,0 +1,138 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Privacy policy · Waverly</title>
+<meta name="description" content="How Waverly handles your camera, keyboard, Google Calendar and Tasks, and location. The short version: it all stays on your Mac.">
+<meta name="theme-color" content="#0B0A1F">
+<meta name="color-scheme" content="dark">
+<link rel="icon" type="image/png" sizes="64x64" href="assets/favicon-64.png">
+<link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Waverly privacy policy">
+<meta property="og:description" content="How Waverly handles your camera, keyboard, Google Calendar and Tasks, and location. The short version: it all stays on your Mac.">
+<link rel="preload" href="assets/fonts/BricolageGrotesque-latin.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="assets/css/site.css?v=4">
+<script src="assets/js/site.js?v=4" defer></script>
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+
+<header class="nav">
+  <div class="wrap nav-in">
+    <a class="brand" href="./"><img src="assets/favicon-64.png" alt="" width="28" height="28"><span>Waverly</span></a>
+    <nav aria-label="Primary">
+      <a class="nl" href="./#try">Try it</a>
+      <a class="nl" href="./#more">Features</a>
+      <a class="nl" href="./#faq">FAQ</a>
+      <a class="nav-gh" href="https://github.com/LurpDaDerp/Waverly"><svg class="ghm" viewBox="0 0 16 16" aria-hidden="true" focusable="false"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg><span class="sr-only">Waverly on GitHub</span></a>
+      <a class="btn btn-small" href="download/Waverly-1.0.dmg" download="Waverly-1.0.dmg">Download</a>
+    </nav>
+  </div>
+</header>
+
+<div class="doc-head">
+  <div class="stars" aria-hidden="true"></div>
+  <div class="wrap title">
+    <p class="kicker">Waverly</p>
+    <h1>Privacy policy</h1>
+    <p class="fine">Effective November 17, 2026</p>
+  </div>
+</div>
+
+<main id="main" class="doc">
+  <div class="summary">
+    <p>The short version: Waverly runs on your Mac. It has no servers, no accounts, no analytics and no ads. It looks at your camera on your Mac and never records it or sends it anywhere. If you connect Google, it can read your calendar and tasks, and only you see them. The only change it ever makes is marking a task completed when you check it off.</p>
+  </div>
+
+  <h2>Who makes Waverly?</h2>
+  <p>Waverly is a free Mac app. Its source code is public at <a href="https://github.com/LurpDaDerp/Waverly">github.com/LurpDaDerp/Waverly</a>. This policy covers the Waverly app and this website. Waverly has no servers of its own, so we never receive any of your data. Using Waverly also means agreeing to the <a href="terms">terms of service</a>.</p>
+
+  <h2>What does Waverly do with my camera?</h2>
+  <p>With your permission, Waverly uses your Mac&rsquo;s camera to:</p>
+  <ul>
+    <li>notice when you raise your hand,</li>
+    <li>recognize gestures: a wave, an open hand, a fist and hand movement,</li>
+    <li>notice when you walk away or the room gets dark, and</li>
+    <li>while the dashboard is open, follow where your head is for the parallax effect (the cards leaning as you move).</li>
+  </ul>
+  <p>You can turn parallax off in Settings. Then Waverly doesn&rsquo;t work out which way your head is turned, and it sends no head position to the dashboard. It still notices whether someone is in front of the camera, so it can close when you leave.</p>
+  <ul>
+    <li>Waverly looks at the camera picture on your Mac, using Apple&rsquo;s Vision framework and Google&rsquo;s MediaPipe. Both run on your Mac.</li>
+    <li>Waverly&rsquo;s parts hand camera frames to each other through a small shared-memory file in Waverly&rsquo;s folder. Only your user account can read it. It holds just the last few frames and is overwritten all the time. It&rsquo;s wiped as soon as the camera stops sending frames to the hand tracker, and deleted when Waverly quits.</li>
+    <li>Camera frames are <strong>never saved</strong> as photos or video, never written to logs, and <strong>never sent</strong> off your Mac.</li>
+    <li>You can turn off camera access at any time in <span class="path"><span>System Settings</span> &rsaquo; <span>Privacy &amp; Security</span> &rsaquo; <span>Camera</span></span>. The keyboard shortcut still works. You can also pause the camera from Waverly&rsquo;s menu bar icon.</li>
+  </ul>
+
+  <h2>What does Waverly do with my keyboard?</h2>
+  <p>If you allow Accessibility in <span class="path"><span>System Settings</span> &rsaquo; <span>Privacy &amp; Security</span> &rsaquo; <span>Accessibility</span></span>, Waverly watches key presses only to spot its keyboard shortcut and Esc. It doesn&rsquo;t record, log or send any keys. Accessibility is optional. Without it, gestures and the menu bar still work.</p>
+  <p>To save battery, Waverly also asks macOS how long ago a key was last pressed. It never asks which key. This lets hand detection rest while you type.</p>
+
+  <h2>What does Waverly do with my Google Calendar and Google Tasks?</h2>
+  <p>Connecting Google is optional. If you connect, Waverly asks for two permissions:</p>
+  <ul>
+    <li><code>calendar.readonly</code>, to read your calendars and your events for today and the days ahead.</li>
+    <li><code>tasks</code>, to read your task lists and tasks, and to mark a task completed when you check it off in Waverly.</li>
+  </ul>
+  <p>Waverly uses this data <strong>only to show your events and tasks to you, on your own Mac</strong>. It shows them in the dashboard and in Settings (for example, so you can choose which calendars feed each list). The only change Waverly ever makes in your Google account is marking a task completed, and only when you check that task off. It never deletes, edits or creates anything else.</p>
+  <p>Waverly keeps your sign-in tokens and a short-lived copy of your events and tasks in <code>~/Library/Application Support/Waverly</code>. Only your user account can read them. They go nowhere except to Google itself, over a secure connection (HTTPS), to fetch your data, keep you signed in and mark the tasks you check off as completed.</p>
+  <p><strong>Waverly&rsquo;s use and transfer of information received from Google APIs adheres to the <a href="https://developers.google.com/terms/api-services-user-data-policy">Google API Services User Data Policy</a>, including the Limited Use requirements.</strong> In plain words: your Google data is not passed on to anyone, not used for ads, not sold, not used to train AI or machine-learning models, and not read by any person.</p>
+
+  <h2>What about my location and the weather?</h2>
+  <p>Waverly needs a location to show the weather. If you allow Location Services, macOS works out where you are to within about a kilometer. It doesn&rsquo;t use a precise, GPS-level fix. Waverly asks for it when it starts, after your Mac wakes, and every few hours. Apple&rsquo;s geocoding service turns it into a place name.</p>
+  <p>If you&rsquo;d rather not share your location, type a city instead. The search uses Apple Maps. The place and its coordinates are saved only in Waverly&rsquo;s settings file on your Mac.</p>
+  <p>To get the forecast, Waverly sends your location to <a href="https://open-meteo.com/">Open-Meteo</a>, <strong>rounded to about 10&nbsp;km</strong> (one decimal place of latitude and longitude). It also sends your unit choices and your time zone. Nothing else is attached. Open-Meteo&rsquo;s own privacy terms apply to that request.</p>
+
+  <h2>What else does Waverly download?</h2>
+  <ul>
+    <li><strong>The word and fact of the day.</strong> Waverly gets the word of the day from Merriam-Webster&rsquo;s public feed, and the fact of the day from Wikipedia. If Wikipedia can&rsquo;t be reached, it uses uselessfacts.jsph.pl instead. These requests include nothing about you.</li>
+    <li><strong>Setup files.</strong> The first time it runs, Waverly downloads what it needs to run hand tracking on your Mac: a copy of Python (from GitHub) and packages such as MediaPipe and NumPy (from the Python Package Index). These are ordinary software downloads. Nothing about you is sent.</li>
+  </ul>
+
+  <h2>What doesn&rsquo;t Waverly do?</h2>
+  <ul>
+    <li>No analytics, telemetry, crash reporting or tracking of any kind.</li>
+    <li>No Waverly accounts and no Waverly servers.</li>
+    <li>No selling or sharing of data. There is no data to share.</li>
+  </ul>
+
+  <h2>What about this website?</h2>
+  <p>This website is a static site hosted by Vercel. It sets no cookies and loads no third-party scripts, fonts or trackers. Vercel may keep standard server logs. See <a href="https://vercel.com/legal/privacy-policy">Vercel&rsquo;s privacy policy</a>.</p>
+  <p>The &ldquo;Try it&rdquo; demo on the home page uses your camera only after you click <strong>Try it with your camera</strong> and allow it in your browser. The video is looked at only inside your browser, by a hand-tracking model the page downloads from this website. Nothing from the camera is saved or sent anywhere. The camera turns off when you scroll away from the demo, switch to another tab, or click <strong>Turn off camera</strong>.</p>
+
+  <h2>How do I remove my data or take back access?</h2>
+  <ul>
+    <li>To disconnect Google, open Waverly&rsquo;s <span class="path"><span>Settings</span> &rsaquo; <span>Google</span></span> and click <strong>Disconnect</strong>.</li>
+    <li>You can also remove Waverly&rsquo;s access at any time from your Google Account, at <a href="https://myaccount.google.com/permissions">myaccount.google.com/permissions</a>.</li>
+    <li>To remove everything Waverly has stored, quit Waverly and delete these folders: <code>~/Library/Application Support/Waverly</code>, <code>~/Library/Caches/Waverly</code> and <code>~/Library/Logs/Waverly</code>. The logs are the app&rsquo;s own notes for fixing problems, and they never contain camera images or Google tokens. Then delete the app.</li>
+  </ul>
+
+  <h2>Is Waverly for children?</h2>
+  <p>Waverly is not meant for children under 13, and it doesn&rsquo;t knowingly collect information from anyone.</p>
+
+  <h2>What if this policy changes?</h2>
+  <p>We&rsquo;ll post the new version on this page with a new effective date. The history of this page is public in the <a href="https://github.com/LurpDaDerp/Waverly">project&rsquo;s repository</a>.</p>
+
+  <h2>How do I contact you?</h2>
+  <p>Open an issue at <a href="https://github.com/LurpDaDerp/Waverly/issues">github.com/LurpDaDerp/Waverly/issues</a>.</p>
+</main>
+
+<footer class="foot">
+  <div class="wrap foot-in">
+    <div class="foot-brand">
+      <a class="brand" href="./"><img src="assets/favicon-64.png" alt="" width="26" height="26"><span>Waverly</span></a>
+      <p>Your day, at a wave.</p>
+    </div>
+    <nav aria-label="Footer">
+      <a href="https://github.com/LurpDaDerp/Waverly">GitHub</a>
+      <a href="https://github.com/LurpDaDerp/Waverly/releases">Releases</a>
+      <a href="privacy" aria-current="page">Privacy</a>
+      <a href="terms">Terms</a>
+      <a href="https://github.com/LurpDaDerp/Waverly/blob/main/THIRD_PARTY_NOTICES.md">Credits</a>
+    </nav>
+    <p class="legal">&copy; 2026 Waverly <span aria-hidden="true">&middot;</span> <a href="https://github.com/LurpDaDerp/Waverly/blob/main/LICENSE">MIT License</a> <span aria-hidden="true">&middot;</span> Set in <a href="assets/fonts/OFL-Bricolage.txt">Bricolage Grotesque</a> and <a href="assets/fonts/OFL-Newsreader.txt">Newsreader</a> <span aria-hidden="true">&middot;</span> Demo hand tracking by <a href="assets/vendor/mediapipe/NOTICE.txt">MediaPipe</a> (Apache 2.0)</p>
+  </div>
+</footer>
+</body>
+</html>

@@ -1,0 +1,304 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Waverly: your day, at a wave</title>
+<meta name="description" content="A free, calm dashboard for your Mac. Give it a little wave and your calendar, tasks and weather appear. Make a fist and it goes away. Everything stays on your Mac.">
+<meta name="theme-color" content="#0B0A1F">
+<meta name="color-scheme" content="dark">
+<link rel="icon" type="image/png" sizes="64x64" href="assets/favicon-64.png">
+<link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
+<!-- site origin: these three lines are the only place it appears -->
+<link rel="canonical" href="https://waverly-app.vercel.app/">
+<meta property="og:url" content="https://waverly-app.vercel.app/">
+<meta property="og:image" content="https://waverly-app.vercel.app/assets/og-card.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="The Waverly app icon, a raised open hand with a motion trail over a sunset sky, beside the words: Waverly. Your day, at a wave.">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Waverly">
+<meta property="og:title" content="Waverly: your day, at a wave">
+<meta property="og:description" content="A free, calm dashboard for your Mac. Give it a little wave and your day appears.">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="preload" href="assets/fonts/BricolageGrotesque-latin.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="assets/css/site.css?v=4">
+<script src="assets/js/site.js?v=4" defer></script>
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+
+<header class="nav">
+  <div class="wrap nav-in">
+    <a class="brand" href="./"><img src="assets/favicon-64.png" alt="" width="28" height="28"><span>Waverly</span></a>
+    <nav aria-label="Primary">
+      <a class="nl" href="#try">Try it</a>
+      <a class="nl" href="#more">Features</a>
+      <a class="nl" href="#faq">FAQ</a>
+      <a class="nav-gh" href="https://github.com/LurpDaDerp/Waverly"><svg class="ghm" viewBox="0 0 16 16" aria-hidden="true" focusable="false"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg><span class="sr-only">Waverly on GitHub</span></a>
+      <a class="btn btn-small" href="download/Waverly-1.0.dmg" download="Waverly-1.0.dmg">Download</a>
+    </nav>
+  </div>
+</header>
+
+<main id="main">
+
+<!-- ================================================================ hero -->
+<section class="hero" aria-labelledby="hero-title">
+  <div class="stars" aria-hidden="true"></div>
+  <div class="wrap hero-copy">
+    <div class="app-icon" aria-hidden="true">
+      <img class="ai" src="assets/icon-256.png" srcset="assets/icon-256.png 1x, assets/icon-512.png 2x" width="208" height="208" alt="">
+      <img class="ai-reflect" src="assets/icon-256.png" srcset="assets/icon-256.png 1x, assets/icon-512.png 2x" width="208" height="208" alt="">
+    </div>
+    <h1 id="hero-title">Waverly</h1>
+    <p class="tagline">Your day, at a wave.</p>
+    <p class="lede">A calm little dashboard for your Mac. Give it a wave, and your calendar, tasks and weather appear right over what you&rsquo;re doing. Make a fist, and it goes away.</p>
+    <div class="ctas">
+      <a class="btn btn-big" href="download/Waverly-1.0.dmg" download="Waverly-1.0.dmg"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M12 4v11M7 10.5l5 5 5-5M5 20h14"/></svg>Download for Mac</a>
+      <a class="btn ghost" href="#try">Try it here first</a>
+    </div>
+    <p class="fine"><span class="nw">Version 1.0&nbsp;<span aria-hidden="true">&middot;</span></span> <span class="nw">macOS 14 Sonoma or later&nbsp;<span aria-hidden="true">&middot;</span></span> <span class="nw">Apple silicon&nbsp;<span aria-hidden="true">&middot;</span></span> <span class="nw">Free</span></p>
+  </div>
+</section>
+
+<!-- ================================================================ the demo: a laptop you can wave at -->
+<section class="demo" id="try" aria-labelledby="try-title" data-demo data-cam="off" data-hud="closed" data-hand="none">
+  <div class="wrap">
+    <h2 class="sr-only" id="try-title">Try Waverly</h2>
+
+    <div class="laptop">
+      <div class="lap-lid">
+        <div class="lap-screen" tabindex="0" role="group" aria-label="Waverly demo. Press Space to open or close the dashboard, and the arrow keys to scroll." aria-describedby="demo-status">
+          <div class="desk" aria-hidden="true">
+            <div class="hill h1"></div><div class="hill h2"></div>
+            <div class="menubar">
+              <i></i><i></i><i></i><i></i><i></i>
+              <span class="sp"></span>
+              <svg class="waverly-glyph" viewBox="18 42 296 296"><path d="M32.6 181.1A170 170 0 0 1 172.3 59.7" fill="none" stroke="currentColor" stroke-width="22" stroke-linecap="round"/><path transform="translate(200 200) rotate(-8) scale(1.12) translate(-128 -128)" d="M216,104v48a88,88,0,0,1-176,0V64a16,16,0,0,1,32,0v56a8,8,0,0,0,16,0V32a16,16,0,0,1,32,0v80a8,8,0,0,0,16,0V48a16,16,0,0,1,32,0v80.67A48.08,48.08,0,0,0,128,176a8,8,0,0,0,16,0,32,32,0,0,1,32-32,8,8,0,0,0,8-8V104a16,16,0,0,1,32,0Z" fill="currentColor"/></svg>
+              <span class="mb-clock" data-k="menuclock">Tue 7:42 PM</span>
+            </div>
+            <div class="win notes"><div class="bar"><b></b><b></b><b></b></div><div class="ln t"></div><div class="ln"></div><div class="ln s"></div><div class="ln"></div><div class="ln s"></div><div class="ln"></div></div>
+            <div class="win code"><div class="bar"><b></b><b></b><b></b></div><div class="ln"></div><div class="ln"></div><div class="ln"></div><div class="ln"></div><div class="ln"></div><div class="ln"></div><div class="ln"></div><div class="ln"></div></div>
+            <div class="dock"><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+          </div>
+
+          <!-- a small copy of the real dashboard (sample data) -->
+          <div class="hud-screen demo-hud" aria-label="Waverly dashboard with sample data" role="group">
+            <div class="hud-sky" aria-hidden="true"></div>
+            <div class="hud-stage">
+              <section role="group" class="hc greet" data-enter="0" aria-label="Greeting">
+                <p class="date" data-k="date">Tuesday, November 17</p>
+                <p class="hello" data-k="hello">Good evening, Alex</p>
+              </section>
+              <section role="group" class="hc clock" data-enter="1" aria-label="Time">
+                <div class="time"><span class="hm" data-k="hm">7:42</span><span class="side"><span class="ampm" data-k="ampm">PM</span><span class="sec" data-k="sec">08</span></span></div>
+              </section>
+              <section role="group" class="hc sched" data-enter="2" data-scroll="schedule" aria-label="Calendar">
+                <header class="card-head"><h3>Calendar</h3></header>
+                <div class="viewport vfade"><div class="track" data-k="events"></div></div>
+              </section>
+              <section role="group" class="hc dead" data-enter="3" data-scroll="deadlines" aria-label="Tasks">
+                <header class="card-head"><h3>Tasks</h3></header>
+                <div class="viewport vfade"><ol class="track dl-list" data-k="tasks"></ol></div>
+              </section>
+              <section role="group" class="hc weather" data-enter="4" data-scroll="weather" aria-label="Weather">
+                <header class="card-head"><h3>Weather</h3><span class="place">Lakeside</span></header>
+                <div class="wx-now"><span data-k="wxicon"></span><div class="temp" data-k="temp">58&deg;</div><div><div class="cond" data-k="cond">Clear</div><div class="cond-sub" data-k="hilo"><span>H 64&deg;</span><span>L 49&deg;</span></div></div></div>
+                <div class="chips" data-k="chips"></div>
+                <div class="viewport hfade hourly-vp"><div class="hourly track" data-k="hourly"></div></div>
+              </section>
+              <section role="group" class="hc words" data-enter="5" aria-label="Word and fact of the day">
+                <div class="wotd">
+                  <h4>Word of the day</h4>
+                  <div class="word">petrichor</div>
+                  <div class="word-meta"><i>noun</i><span>PEH-truh-kor</span></div>
+                  <p class="prose">The earthy smell that rises with the first rain after a dry spell.</p>
+                </div>
+                <div class="fact">
+                  <h4>Fact of the day</h4>
+                  <p class="prose">A day on Venus is longer than its year: it turns once every 243 Earth days, but circles the Sun in 225.</p>
+                  <p class="source">Wikipedia</p>
+                </div>
+              </section>
+            </div>
+          </div>
+
+          <div class="pip" aria-hidden="true"><video muted playsinline disablepictureinpicture></video></div>
+          <p class="hand-chip" aria-hidden="true"><i></i><span data-demo-hand>No hand yet</span></p>
+          <p class="hint" aria-hidden="true"><span data-demo-hint>Wave hello to open</span></p>
+
+          <div class="start">
+            <button class="btn" type="button" data-act="camera"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><rect x="2.5" y="6" width="13.5" height="12" rx="3"/><path d="M16 10.5l5.5-3v9l-5.5-3z"/></svg>Try it with your camera</button>
+            <p>Your video stays right here in your browser. Nothing is saved or sent.</p>
+          </div>
+          <div class="notch" aria-hidden="true"></div>
+        </div>
+      </div>
+      <div class="lap-base" aria-hidden="true"></div>
+    </div>
+
+    <div class="demo-bar">
+      <p class="demo-status" id="demo-status" role="status"></p>
+      <div class="demo-keys">
+        <span class="lbl">No camera? That&rsquo;s okay.</span>
+        <span class="demo-btns">
+          <button type="button" class="chip-btn" data-act="open">Open</button>
+          <button type="button" class="chip-btn" data-act="scroll">Scroll</button>
+          <button type="button" class="chip-btn" data-act="close">Close</button>
+        </span>
+        <span class="or">or press <kbd><span aria-hidden="true">&#8679;</span><span class="sr-only">Shift</span></kbd><kbd>H</kbd></span>
+        <button type="button" class="chip-btn stop" data-act="stop" hidden>Turn off camera</button>
+      </div>
+    </div>
+
+    <ol class="how">
+      <li><b>Open</b><span>Wave hello with your palm toward the camera. Or make a fist, then open your hand.</span></li>
+      <li><b>Scroll</b><span>Hold your hand open and move it up or down. Move it sideways for the weather.</span></li>
+      <li><b>Close</b><span>Show an open hand, then make a fist and hold it a moment. Or just walk away.</span></li>
+    </ol>
+    <p class="how-note">On your Mac, <kbd>fn</kbd><kbd><span aria-hidden="true">&#8679;</span><span class="sr-only">Shift</span></kbd><kbd>H</kbd> opens and closes it too. You can change the gestures and the shortcut in Settings.</p>
+  </div>
+</section>
+
+<!-- ================================================================ a few more things -->
+<section class="band more" id="more" aria-label="Features">
+  <div class="wrap more-grid">
+    <article class="blurb" id="sky">
+      <h2>An adaptive sky</h2>
+      <p>The sky behind the cards follows your day. It&rsquo;s soft and bright in the morning, warm at sunset and full of stars at night. When it rains or snows outside, it does in there too.</p>
+      <ul class="sky-strip" aria-label="Four example skies">
+        <li class="s-dawn"><span>Morning</span></li>
+        <li class="s-day"><span>Cloudy day</span></li>
+        <li class="s-dusk"><span>Sunset</span></li>
+        <li class="s-night"><span>Snowy night</span></li>
+      </ul>
+    </article>
+    <article class="blurb" id="customise">
+      <h2>Make it yours</h2>
+      <p>Everything lives in Settings, and changes show up right away.</p>
+      <ul class="plain">
+        <li><b>Motion:</b> the gentle lean of the cards, moving weather, and how it opens and closes: fade, zoom, shatter, slide or swirl.</li>
+        <li><b>Graphics:</b> how much weather detail the sky shows, and light, dark or adaptive cards.</li>
+        <li><b>Controls:</b> which gestures open and close it, your keyboard shortcut and the scroll direction.</li>
+        <li><b>Calendars:</b> which Google calendars and task lists show up, on which list, and in what colors.</li>
+      </ul>
+    </article>
+    <article class="blurb" id="battery">
+      <h2>Easy on your battery</h2>
+      <p>While Waverly is closed, it just glances at the camera a few times a second. Only when something moves does a small hand detector built into your Mac take a look. The full hand tracker starts only when it sees your hand, and it rests again soon after. It also takes a break while you type, and on battery the camera pauses while your display sleeps.</p>
+    </article>
+    <article class="blurb" id="privacy">
+      <h2>It all stays on your Mac</h2>
+      <p>The camera is read on your Mac and is never recorded or sent anywhere. Your calendar is read-only, and a task changes only when you check it off. There are no accounts and no tracking.</p>
+      <a class="more-link" href="privacy">Read the privacy policy <span aria-hidden="true">&rarr;</span></a>
+    </article>
+  </div>
+</section>
+
+<!-- ================================================================ FAQ -->
+<section class="band faq" id="faq" aria-labelledby="faq-title">
+  <div class="wrap faq-in">
+    <div class="sec-head">
+      <p class="kicker">FAQ</p>
+      <h2 id="faq-title">Good <em>questions.</em></h2>
+      <p class="lede">Something else on your mind? <a href="https://github.com/LurpDaDerp/Waverly/issues">Ask on GitHub</a>.</p>
+    </div>
+    <div class="qa">
+      <details>
+        <summary>macOS won&rsquo;t open Waverly the first time. Is that okay?</summary>
+        <div class="ans">
+          <p>Yes, that&rsquo;s expected. Waverly isn&rsquo;t notarized by Apple yet. Go to <span class="path"><span>System Settings</span> &rsaquo; <span>Privacy &amp; Security</span></span>, scroll down to Waverly and click <b>Open Anyway</b>. You only do this once.</p>
+        </div>
+      </details>
+      <details>
+        <summary>Does video from my camera leave my Mac?</summary>
+        <div class="ans">
+          <p>No. Waverly looks at the camera right on your Mac. The video is never saved and never sent anywhere. There are no Waverly servers to send it to.</p>
+        </div>
+      </details>
+      <details>
+        <summary>Is the camera always on?</summary>
+        <div class="ans">
+          <p>While Waverly watches for your hand, yes, at a slow pace, so the camera light stays on. You can choose <b>Pause camera</b> from the menu bar at any time. It also pauses when your screen is locked or your Mac sleeps.</p>
+        </div>
+      </details>
+      <details>
+        <summary>What does it read from Google?</summary>
+        <div class="ans">
+          <p>Only your calendar events and tasks, just to show them to you. The one thing it can change is marking a task done when you check it off. It never deletes, edits or creates anything. Connecting Google is optional.</p>
+          <p>Until Google finishes reviewing the app, you&rsquo;ll see a &ldquo;Google hasn&rsquo;t verified this app&rdquo; screen. Click <b>Advanced</b>, then <b>Go to Waverly (unsafe)</b>.</p>
+        </div>
+      </details>
+      <details>
+        <summary>Do I need to install anything else?</summary>
+        <div class="ans">
+          <p>No. The first time it opens, Waverly downloads its hand tracker on its own. That&rsquo;s about 250&nbsp;MB, just once, and you can keep working while it does.</p>
+        </div>
+      </details>
+      <details>
+        <summary>How do I uninstall it?</summary>
+        <div class="ans">
+          <p>If you connected Google, first go to <span class="path"><span>Settings</span> &rsaquo; <span>Google</span></span> and click <b>Disconnect</b>, so Google drops Waverly&rsquo;s access too. (Already uninstalled? Remove Waverly at <a href="https://myaccount.google.com/permissions">myaccount.google.com/permissions</a>.)</p>
+          <p>Then choose <b>Quit Waverly</b> from its menu bar icon and move the app to the Trash. Delete the folder <code>~/Library/Application Support/Waverly</code> (about 380&nbsp;MB, mostly the hand tracker) and the file <code>~/Library/Preferences/app.waverly.Waverly.plist</code>. You can delete <code>~/Library/Caches/Waverly</code> and <code>~/Library/Logs/Waverly</code> too.</p>
+          <p>To clear its camera and Accessibility permissions as well, run <code>tccutil reset All app.waverly.Waverly</code> in Terminal.</p>
+        </div>
+      </details>
+    </div>
+  </div>
+</section>
+
+<!-- ================================================================ download -->
+<section class="download" id="download" aria-labelledby="dl-title">
+  <div class="horizon">
+    <div class="stars" aria-hidden="true"></div>
+    <div class="wrap">
+      <img class="dl-icon" src="assets/icon-256.png" srcset="assets/icon-256.png 1x, assets/icon-512.png 2x" width="120" height="120" alt="" loading="lazy">
+      <h2 id="dl-title">Free for your Mac, <em>whenever you&rsquo;re ready.</em></h2>
+      <a class="btn btn-big" href="download/Waverly-1.0.dmg" download="Waverly-1.0.dmg"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M12 4v11M7 10.5l5 5 5-5M5 20h14"/></svg>Download for Mac</a>
+      <p class="fine"><span class="nw">Version 1.0&nbsp;<span aria-hidden="true">&middot;</span></span> <span class="nw">macOS 14 Sonoma or later&nbsp;<span aria-hidden="true">&middot;</span></span> <span class="nw">Apple silicon&nbsp;<span aria-hidden="true">&middot;</span></span> <span class="nw">Free</span></p>
+    </div>
+    <div class="sun" aria-hidden="true"></div>
+  </div>
+  <div class="ground">
+    <div class="wrap install">
+      <div>
+        <h3>You&rsquo;ll need</h3>
+        <ul class="reqs">
+          <li><b>macOS 14 Sonoma</b><span>or later</span></li>
+          <li><b>Apple silicon</b><span>M1 or newer</span></li>
+          <li><b>A camera</b><span>the built-in one is fine</span></li>
+          <li><b>About 250&nbsp;MB</b><span>downloaded once, at setup</span></li>
+        </ul>
+      </div>
+      <div class="first-run">
+        <h3>The first time</h3>
+        <ol>
+          <li><span>Open the download and drag <b>Waverly</b> to Applications.</span></li>
+          <li><span>Open Waverly. macOS will stop it the first time. Go to <span class="path"><span>System Settings</span> &rsaquo; <span>Privacy &amp; Security</span></span> and click <b>Open Anyway</b>.</span></li>
+          <li><span>Follow the short setup. Then give your Mac a little wave.</span></li>
+        </ol>
+      </div>
+    </div>
+  </div>
+</section>
+
+</main>
+<footer class="foot">
+  <div class="wrap foot-in">
+    <div class="foot-brand">
+      <a class="brand" href="./"><img src="assets/favicon-64.png" alt="" width="26" height="26"><span>Waverly</span></a>
+      <p>Your day, at a wave.</p>
+    </div>
+    <nav aria-label="Footer">
+      <a href="https://github.com/LurpDaDerp/Waverly">GitHub</a>
+      <a href="https://github.com/LurpDaDerp/Waverly/releases">Releases</a>
+      <a href="privacy">Privacy</a>
+      <a href="terms">Terms</a>
+      <a href="https://github.com/LurpDaDerp/Waverly/blob/main/THIRD_PARTY_NOTICES.md">Credits</a>
+    </nav>
+    <p class="legal">&copy; 2026 Waverly <span aria-hidden="true">&middot;</span> <a href="https://github.com/LurpDaDerp/Waverly/blob/main/LICENSE">MIT License</a> <span aria-hidden="true">&middot;</span> Set in <a href="assets/fonts/OFL-Bricolage.txt">Bricolage Grotesque</a> and <a href="assets/fonts/OFL-Newsreader.txt">Newsreader</a> <span aria-hidden="true">&middot;</span> Demo hand tracking by <a href="assets/vendor/mediapipe/NOTICE.txt">MediaPipe</a> (Apache 2.0)</p>
+  </div>
+</footer>
+</body>
+</html>

@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Waverly</title>
+<link rel="preload" href="/static/fonts/BricolageGrotesque.ttf" as="font" type="font/ttf" crossorigin>
+<link rel="stylesheet" href="/static/style.css">
+</head>
+<body class="asleep" data-tone="dark" data-sky="dark">
+<div id="sky-veil">
+<div id="sky" aria-hidden="true">
+  <div class="sky-glow"></div>
+  <div class="sky-moon"></div>
+  <div class="sky-cover"></div>
+  <canvas id="ambient"></canvas>
+  <div class="sky-wash"></div>
+</div>
+</div>
+
+<main id="stage">
+  <section class="card greet" data-enter="0">
+    <p class="date" id="date"></p>
+    <h1 class="hello" id="hello" data-title></h1>
+  </section>
+
+  <section class="card clock" data-enter="1" aria-label="Time">
+    <div class="time" data-title>
+      <span class="hm" id="hm"></span>
+      <span class="side"><span class="ampm" id="ampm"></span><span class="sec" id="sec"></span></span>
+    </div>
+  </section>
+
+  <section class="card schedule" data-enter="2" data-scroll="schedule">
+    <header class="card-head"><h2 data-title id="left-title">Calendar</h2></header>
+    <div class="viewport vfade" id="schedule-vp"><div class="track" id="schedule"></div></div>
+  </section>
+
+  <section class="card deadlines" data-enter="3" data-scroll="deadlines">
+    <header class="card-head"><h2 data-title id="right-title">Tasks</h2></header>
+    <div class="viewport vfade" id="deadlines-vp"><ol class="track" id="deadlines"></ol></div>
+  </section>
+
+  <section class="card weather" id="wx-card" data-enter="4" data-scroll="weather">
+    <header class="card-head"><h2 data-title>Weather</h2><span class="place" id="place"></span></header>
+    <div class="now" id="wx-now"></div>
+    <div class="chips" id="wx-chips"></div>
+    <div class="viewport hfade" id="hourly-vp"><div class="track" id="hourly"></div></div>
+  </section>
+
+  <section class="card words" data-enter="5">
+    <div class="wotd" id="wotd"></div>
+    <div class="fact" id="fact"></div>
+  </section>
+</main>
+
+<div id="curtain"></div>
+<div id="debug" hidden></div>
+<script type="module" src="/static/app.js"></script>
+</body>
+</html>

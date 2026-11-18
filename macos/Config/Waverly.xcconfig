@@ -1,0 +1,10 @@
+// Waverly.xcconfig — base build settings of the Waverly target (see scripts/gen_xcodeproj.py).
+//
+// The Google sign-in client built into the app. Empty by default: such a build
+// asks the user for their own OAuth client file (Settings › Google › Advanced).
+// To build one in, copy Secrets.example.xcconfig to Secrets.xcconfig (git-ignored)
+// and fill it in; it is included last, so its values win.
+GOOGLE_CLIENT_ID =
+GOOGLE_CLIENT_SECRET =
+
+#include? "Secrets.xcconfig"

@@ -1,0 +1,15 @@
+.DS_Store
+__pycache__/
+*.pyc
+/build/
+/dist/
+/hud/calibration/
+/macos/Config/Secrets.xcconfig
+xcuserdata/
+*.xcuserstate
+
+# website deploy
+docs/download/*.dmg
+docs/.vercel
+.vercel
+.env*

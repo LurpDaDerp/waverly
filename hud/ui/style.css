@@ -1,0 +1,750 @@
+@font-face {
+  font-family: "Bricolage";
+  src: url("fonts/BricolageGrotesque.ttf") format("truetype");
+  font-weight: 200 800;
+  font-stretch: 75% 100%;
+  font-display: block;
+}
+@font-face {
+  font-family: "Newsreader";
+  src: url("fonts/Newsreader.ttf") format("truetype");
+  font-weight: 200 800;
+  font-display: block;
+}
+@font-face {
+  font-family: "Newsreader";
+  src: url("fonts/Newsreader-Italic.ttf") format("truetype");
+  font-weight: 200 800;
+  font-style: italic;
+  font-display: block;
+}
+
+/* Registered so that every colour cross-fades when the sky changes. */
+@property --sky-top { syntax: "<color>"; inherits: true; initial-value: #050A1C; }
+@property --sky-mid { syntax: "<color>"; inherits: true; initial-value: #0E1A3A; }
+@property --sky-bot { syntax: "<color>"; inherits: true; initial-value: #1D2C55; }
+@property --accent { syntax: "<color>"; inherits: true; initial-value: #A3BEFF; }
+@property --ink { syntax: "<color>"; inherits: true; initial-value: #F5F7FB; }
+@property --ink-2 { syntax: "<color>"; inherits: true; initial-value: rgba(245,247,251,.68); }
+@property --ink-3 { syntax: "<color>"; inherits: true; initial-value: rgba(245,247,251,.44); }
+@property --glass-a { syntax: "<color>"; inherits: true; initial-value: rgba(30,38,64,.40); }
+@property --glass-b { syntax: "<color>"; inherits: true; initial-value: rgba(14,18,36,.30); }
+@property --rim { syntax: "<color>"; inherits: true; initial-value: rgba(255,255,255,.30); }
+@property --spec { syntax: "<color>"; inherits: true; initial-value: rgba(255,255,255,.18); }
+@property --shade { syntax: "<color>"; inherits: true; initial-value: rgba(0,0,0,.40); }
+@property --line { syntax: "<color>"; inherits: true; initial-value: rgba(255,255,255,.10); }
+@property --chip { syntax: "<color>"; inherits: true; initial-value: rgba(255,255,255,.07); }
+/* the label palette (pills, rings, dots): one colour per id, per sky tone */
+@property --blue { syntax: "<color>"; inherits: true; initial-value: #8DB4FF; }
+@property --amber { syntax: "<color>"; inherits: true; initial-value: #FFB877; }
+@property --teal { syntax: "<color>"; inherits: true; initial-value: #6FE0CF; }
+@property --rose { syntax: "<color>"; inherits: true; initial-value: #FF9DC4; }
+@property --violet { syntax: "<color>"; inherits: true; initial-value: #C6A8FF; }
+@property --green { syntax: "<color>"; inherits: true; initial-value: #A2E38C; }
+@property --gold { syntax: "<color>"; inherits: true; initial-value: #FFDD7A; }
+@property --coral { syntax: "<color>"; inherits: true; initial-value: #FF9A8A; }
+@property --cyan { syntax: "<color>"; inherits: true; initial-value: #86D8FF; }
+@property --slate { syntax: "<color>"; inherits: true; initial-value: #CBD2DE; }
+@property --cover-c { syntax: "<color>"; inherits: true; initial-value: #1A1F2A; }
+@property --danger { syntax: "<color>"; inherits: true; initial-value: #FF7A7A; }
+@property --glow { syntax: "<number>"; inherits: true; initial-value: 0; }
+@property --moon { syntax: "<number>"; inherits: true; initial-value: 0; }
+@property --cover { syntax: "<number>"; inherits: true; initial-value: 0; }
+
+html {
+  /* 1rem = 16px on the 2560x1440 monitor, scaled for any other size */
+  font-size: min(calc(100vw / 160), calc(100vh / 90));
+  background: #000;
+}
+
+body {
+  margin: 0;
+  height: 100vh;
+  overflow: hidden;
+  cursor: none;
+  color: var(--ink);
+  font-family: "Bricolage", system-ui, sans-serif;
+  font-optical-sizing: auto;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+  transition: --sky-top 3s, --sky-mid 3s, --sky-bot 3s, --accent 3s, --ink 3s, --ink-2 3s, --ink-3 3s,
+    --glass-a 3s, --glass-b 3s, --rim 3s, --spec 3s, --shade 3s, --line 3s, --chip 3s,
+    --cover-c 3s, --glow 3s, --moon 3s, --cover 3s, --danger 3s,
+    --blue 3s, --amber 3s, --teal 3s, --rose 3s, --violet 3s, --green 3s, --gold 3s, --coral 3s, --cyan 3s, --slate 3s;
+}
+/* while the HUD opens: a theme that changed while it was closed is simply there (app.js wake) */
+body.snap-theme { transition: none !important; }
+
+body[data-tone="light"] {
+  --ink: #0B1626;
+  --ink-2: rgba(11,22,38,.64);
+  --ink-3: rgba(11,22,38,.42);
+  --glass-a: rgba(255,255,255,.46);
+  --glass-b: rgba(255,255,255,.22);
+  --rim: rgba(255,255,255,.85);
+  --spec: rgba(255,255,255,.40);
+  --shade: rgba(20,36,70,.24);
+  --line: rgba(11,22,38,.10);
+  --chip: rgba(255,255,255,.42);
+  --blue: #1F5BD0; --amber: #C25E12; --teal: #0E7C70; --rose: #B8336A; --violet: #6A3FD0;
+  --green: #2F7D1F; --gold: #8A6A00; --coral: #C0392B; --cyan: #0B6E9E; --slate: #4A5568;
+  --danger: #D23A3A;
+  --on-c: #FFFFFF;  /* a check mark on a filled label colour */
+}
+body[data-tone="dark"] {
+  --ink: #F5F7FB;
+  --ink-2: rgba(245,247,251,.68);
+  --ink-3: rgba(245,247,251,.44);
+  --glass-a: rgba(30,38,64,.40);
+  --glass-b: rgba(14,18,36,.30);
+  --rim: rgba(255,255,255,.30);
+  --spec: rgba(255,255,255,.18);
+  --shade: rgba(0,0,0,.40);
+  --line: rgba(255,255,255,.10);
+  --chip: rgba(255,255,255,.07);
+  --blue: #8DB4FF; --amber: #FFB877; --teal: #6FE0CF; --rose: #FF9DC4; --violet: #C6A8FF;
+  --green: #A2E38C; --gold: #FFDD7A; --coral: #FF9A8A; --cyan: #86D8FF; --slate: #CBD2DE;
+  --danger: #FF7A7A;
+  --on-c: #0B1626;
+}
+/* The cloud cover belongs to the sky, so it follows the sky's tone (data-sky), not the
+   cards' (data-tone): the two differ when the theme is forced to light or dark. */
+body[data-sky="light"] { --cover-c: #8C96A6; }
+body[data-sky="dark"] { --cover-c: #1A1F2A; }
+/* Light cards over a dark sky: the glass is made more opaque so dark ink stays readable. */
+body[data-tone="light"][data-sky="dark"] {
+  --glass-a: rgba(250,251,254,.88);
+  --glass-b: rgba(238,242,249,.80);
+  --spec: rgba(255,255,255,.55);
+  --shade: rgba(0,0,0,.45);
+  --line: rgba(11,22,38,.12);
+  --chip: rgba(255,255,255,.55);
+}
+/* Dark cards over a light sky: deeper glass so light ink stays readable. */
+body[data-tone="dark"][data-sky="light"] {
+  --glass-a: rgba(18,24,42,.76);
+  --glass-b: rgba(10,14,28,.66);
+  --shade: rgba(10,20,40,.40);
+}
+
+/* ------------------------------------------------------------------ sky */
+#sky {
+  position: fixed;
+  inset: -3rem;
+  will-change: transform, translate;
+  transition: translate .3s cubic-bezier(.25,.6,.3,1);
+  background: linear-gradient(180deg, var(--sky-top) 0%, var(--sky-mid) 55%, var(--sky-bot) 100%);
+  transform-origin: 50% 40%;
+}
+#sky > * { position: absolute; inset: 0; pointer-events: none; }
+/* The sky's wrapper: a plain box at rest (no layer of its own). The zoom and swirl animations
+   (anim.js) give it a feathered mask and scale it, so the sky blooms out of the centre without
+   repainting anything. */
+#sky-veil { position: fixed; inset: 0; }
+.sky-glow {
+  opacity: calc(var(--glow) * .9);
+  background: radial-gradient(60rem 60rem at 88% -6%, rgba(255,250,232,.62), rgba(255,244,214,.18) 40%, rgba(255,244,214,0) 70%);
+}
+.sky-moon { opacity: var(--moon); }
+.sky-moon::before {
+  content: "";
+  position: absolute;
+  right: 11%;
+  top: 7%;
+  width: 7rem;
+  height: 7rem;
+  border-radius: 50%;
+  background: radial-gradient(circle at 36% 34%, #FBFCFF, #DCE3F2 62%, #C3CCE0);
+  box-shadow: 0 0 4rem 1rem rgba(200,215,255,.20), 0 0 14rem 4rem rgba(160,185,255,.10);
+  -webkit-mask: radial-gradient(circle at 72% 30%, transparent 2.9rem, #000 3rem);
+  mask: radial-gradient(circle at 72% 30%, transparent 2.9rem, #000 3rem);
+}
+.sky-cover {
+  opacity: var(--cover);
+  background: linear-gradient(180deg, var(--cover-c), transparent 85%);
+}
+#ambient { width: 100%; height: 100%; }
+.sky-wash {
+  opacity: 0;
+  background: radial-gradient(120rem 60rem at 55% 0%, rgba(235,232,255,.9), rgba(235,232,255,0) 70%);
+}
+
+/* ------------------------------------------------------------------ layout */
+#stage {
+  position: fixed;
+  inset: 0;
+  box-sizing: border-box;
+  padding: 4rem;
+  display: grid;
+  gap: 2rem;
+  grid-template-columns: 1fr 1fr 1.04fr;
+  grid-template-rows: 14rem minmax(0, 1fr) 23.5rem;
+  grid-template-areas:
+    "greet greet clock"
+    "sched dead  weather"
+    "sched dead  words";
+  perspective: 2600px;
+  perspective-origin: 50% 45%;
+}
+body.asleep #stage { visibility: hidden; }
+
+.greet { grid-area: greet; }
+.clock { grid-area: clock; }
+.schedule { grid-area: sched; }
+.deadlines { grid-area: dead; }
+.weather { grid-area: weather; }
+.words { grid-area: words; }
+
+/* ------------------------------------------------------------------ liquid glass */
+.card {
+  position: relative;
+  /* head parallax: the compositor animates rotate/translate; keep the rendered card */
+  will-change: transform, rotate, translate;
+  transition: box-shadow .45s ease, rotate .3s cubic-bezier(.25,.6,.3,1), translate .3s cubic-bezier(.25,.6,.3,1);
+  min-height: 0;
+  min-width: 0;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  padding: 2.5rem 2.75rem;
+  border-radius: 2.75rem;
+  background: linear-gradient(165deg, var(--glass-a), var(--glass-b));
+  -webkit-backdrop-filter: blur(1.75rem) saturate(1.8);
+  backdrop-filter: blur(1.75rem) saturate(1.8);
+  box-shadow:
+    inset 0 1px 0 var(--spec),
+    inset 0 -1px 0 rgba(255,255,255,.05),
+    0 2.25rem 4.5rem -1.75rem var(--shade);
+}
+/* rim light: bright where light enters (top left), faint on the opposite edge */
+.card::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  padding: 1.5px;
+  background: linear-gradient(145deg, var(--rim), transparent 32%, transparent 62%, color-mix(in srgb, var(--rim) 50%, transparent));
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  pointer-events: none;
+}
+/* specular sheen */
+.card::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: radial-gradient(90% 55% at 18% 0%, var(--spec), transparent 70%);
+  opacity: .55;
+  pointer-events: none;
+}
+.card > * { position: relative; z-index: 1; }
+.card.engaged {
+  box-shadow:
+    inset 0 1px 0 var(--spec),
+    inset 0 0 0 2px color-mix(in srgb, var(--accent) 60%, transparent),
+    0 2.25rem 4.5rem -1.75rem var(--shade);
+}
+
+.card-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  margin-bottom: .5rem;
+  flex: none;
+}
+.card-head h2, .words h2 {
+  margin: 0;
+  min-width: 0;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  font-size: 1.9rem;
+  font-weight: 600;
+  font-variation-settings: "opsz" 24;
+  letter-spacing: -.005em;
+  color: var(--ink-2);
+}
+.weather .card-head h2 { flex: none; }
+.place {
+  min-width: 0;
+  margin-left: 1.5rem;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;  /* a long city name gives way to the card title */
+  font-size: 1.6rem;
+  color: var(--ink-3);
+  font-weight: 500;
+}
+
+/* a pill naming the item's calendar, task list or category; a long name ends in an ellipsis */
+.tag {
+  display: inline-block;
+  box-sizing: border-box;
+  max-width: 100%;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  font-size: 1.3rem;
+  font-weight: 600;
+  line-height: 1;
+  padding: .45rem .8rem .5rem .75rem;
+  border-radius: 99rem;
+  color: var(--c);
+  background: color-mix(in srgb, var(--c) 15%, transparent);
+}
+.tag::before {
+  content: "";
+  display: inline-block;
+  vertical-align: .08em;
+  width: .6rem;
+  height: .6rem;
+  margin-right: .55rem;
+  border-radius: 50%;
+  background: var(--c);
+}
+.c-blue { --c: var(--blue); }
+.c-amber { --c: var(--amber); }
+.c-teal { --c: var(--teal); }
+.c-rose { --c: var(--rose); }
+.c-violet { --c: var(--violet); }
+.c-green { --c: var(--green); }
+.c-gold { --c: var(--gold); }
+.c-coral { --c: var(--coral); }
+.c-cyan { --c: var(--cyan); }
+.c-slate { --c: var(--slate); }
+
+/* ------------------------------------------------------------------ scrolling viewports */
+.viewport { position: relative; overflow: hidden; flex: 1 1 auto; min-height: 0; }
+.track { will-change: transform; }
+.vfade {
+  -webkit-mask-image: linear-gradient(180deg, transparent 0, #000 2.75rem, #000 calc(100% - 4.5rem), transparent 100%);
+  mask-image: linear-gradient(180deg, transparent 0, #000 2.75rem, #000 calc(100% - 4.5rem), transparent 100%);
+}
+.hfade {
+  -webkit-mask-image: linear-gradient(90deg, transparent 0, #000 4rem, #000 calc(100% - 4rem), transparent 100%);
+  mask-image: linear-gradient(90deg, transparent 0, #000 4rem, #000 calc(100% - 4rem), transparent 100%);
+}
+.vfade .track { padding: 1.75rem 0 4.5rem; }
+
+/* gesture gauge: shows how far the hand is from where it settled */
+.gauge {
+  position: absolute;
+  z-index: 2;
+  opacity: 0;
+  transition: opacity .35s ease;
+  border-radius: 99rem;
+  background: var(--line);
+  --g: 0;
+  --dz: .2;
+}
+.gauge.vertical { right: 1.1rem; top: 22%; bottom: 22%; width: .45rem; }
+.gauge.horizontal { left: 26%; right: 26%; bottom: 1.1rem; height: .45rem; }
+.gauge::before {
+  content: "";
+  position: absolute;
+  border-radius: inherit;
+  background: color-mix(in srgb, var(--ink) 18%, transparent);
+}
+.gauge.vertical::before { left: 0; right: 0; top: calc(50% - var(--dz) * 50%); bottom: calc(50% - var(--dz) * 50%); }
+.gauge.horizontal::before { top: 0; bottom: 0; left: calc(50% - var(--dz) * 50%); right: calc(50% - var(--dz) * 50%); }
+.gauge i {
+  position: absolute;
+  width: 1.15rem;
+  height: 1.15rem;
+  border-radius: 50%;
+  background: var(--accent);
+  box-shadow: 0 0 0 .3rem color-mix(in srgb, var(--accent) 25%, transparent);
+  transform: translate(-50%, -50%);
+}
+.gauge.vertical i { left: 50%; top: calc(50% + var(--g) * 50%); }
+.gauge.horizontal i { top: 50%; left: calc(50% + var(--g) * 50%); }
+.card.engaged .gauge { opacity: 1; }
+
+/* ------------------------------------------------------------------ greeting + clock */
+.greet { justify-content: center; padding-left: 3.5rem; }
+.date {
+  margin: 0 0 .9rem;
+  font-size: 2.1rem;
+  font-weight: 500;
+  color: var(--ink-2);
+  font-variation-settings: "opsz" 24;
+}
+.hello {
+  /* the padding (cancelled by the margin) keeps descenders and overhangs out of the clip */
+  margin: -.12em -.08em;
+  padding: .12em .08em;
+  font-size: 6.6rem;
+  font-weight: 650;
+  font-variation-settings: "opsz" 96;
+  letter-spacing: -.03em;
+  line-height: 1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;  /* a name too long even at half size */
+}
+.clock { justify-content: center; align-items: center; padding: 0 2.5rem; }
+.time { display: flex; align-items: center; gap: 1.6rem; font-variant-numeric: tabular-nums; }
+.hm {
+  font-size: 13.5rem;
+  font-weight: 330;
+  font-stretch: 80%;
+  font-variation-settings: "opsz" 96;
+  letter-spacing: -.035em;
+  line-height: .8;
+}
+.side { display: flex; flex-direction: column; align-items: flex-start; gap: .55rem; }
+.ampm { font-size: 2.3rem; font-weight: 600; color: var(--ink-2); letter-spacing: .02em; }
+.ampm:empty { display: none; }  /* 24-hour clock */
+.sec {
+  font-size: 5.6rem;
+  font-weight: 420;
+  font-stretch: 80%;
+  line-height: .8;
+  color: var(--accent);
+}
+
+/* ------------------------------------------------------------------ left list (today) */
+.row-group { display: flex; flex-direction: column; gap: .4rem; }
+.task {
+  display: grid;
+  grid-template-columns: 2.4rem minmax(0, 1fr);
+  gap: 1.1rem;
+  align-items: start;
+  padding: 1rem 1.25rem;
+  margin: 0 -1.25rem;
+}
+.ring {
+  width: 1.7rem;
+  height: 1.7rem;
+  margin-top: .45rem;
+  border-radius: 50%;
+  box-shadow: inset 0 0 0 .2rem var(--c);
+}
+.t-title { font-size: 2.2rem; font-weight: 600; line-height: 1.18; letter-spacing: -.01em; }
+.t-title, .ev-title, .dl-title { overflow-wrap: anywhere; }
+.meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: .4rem 1.1rem;
+  margin-top: .55rem;
+  font-size: 1.5rem;
+  color: var(--ink-2);
+  font-variant-numeric: tabular-nums;
+}
+.meta:empty { display: none; }
+.overdue-note, .on-note { color: var(--accent); font-weight: 600; }
+.sep { height: 1px; background: var(--line); margin: 1.1rem 0 1.2rem; }
+
+.ev {
+  display: grid;
+  grid-template-columns: 9.25rem minmax(0, 1fr);
+  gap: 1rem;
+  padding: 1.1rem 1.25rem;
+  margin: 0 -1.25rem;
+  border-radius: 1.6rem;
+  transition: opacity .6s ease;
+}
+.ev-time {
+  font-size: 2.15rem;
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -.01em;
+  padding-top: .1rem;
+  white-space: nowrap;
+}
+.ev-time small { font-size: .58em; font-weight: 600; color: var(--ink-3); margin-left: .3rem; }
+.ev-time.all-day { font-size: 1.6rem; color: var(--ink-2); font-weight: 600; padding-top: .55rem; }
+.ev-title { font-size: 2.35rem; font-weight: 600; line-height: 1.16; letter-spacing: -.012em; }
+.ev.past { opacity: .42; }
+.ev.current {
+  background: color-mix(in srgb, var(--accent) 16%, var(--chip));
+  box-shadow: inset 0 0 0 1.5px color-mix(in srgb, var(--accent) 45%, transparent);
+}
+.ev.current .left { color: var(--accent); font-weight: 600; }
+.progress {
+  height: .32rem;
+  margin-top: 1rem;
+  border-radius: 99rem;
+  background: var(--line);
+  overflow: hidden;
+}
+.progress i { display: block; height: 100%; width: calc(var(--p) * 100%); background: var(--accent); border-radius: inherit; }
+
+.now-line {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin: .5rem 0;
+}
+.now-line::after { content: ""; flex: 1; height: 2px; border-radius: 2px; background: color-mix(in srgb, var(--accent) 70%, transparent); }
+.now-pill {
+  font-size: 1.45rem;
+  font-weight: 600;
+  padding: .45rem 1rem .5rem;
+  border-radius: 99rem;
+  color: var(--accent);
+  background: color-mix(in srgb, var(--accent) 16%, transparent);
+  box-shadow: inset 0 0 0 1.5px color-mix(in srgb, var(--accent) 50%, transparent);
+  font-variant-numeric: tabular-nums;
+}
+.now-pill b { font-weight: 700; margin-left: .35rem; }
+
+.empty { padding: 2rem 0; max-width: 34rem; }
+.empty h3 { margin: 0 0 .8rem; font-size: 2.4rem; font-weight: 600; letter-spacing: -.01em; }
+.empty p { margin: 0; font-size: 1.7rem; line-height: 1.45; color: var(--ink-2); }
+.empty b { font-weight: 600; color: var(--ink); }
+
+/* ------------------------------------------------------------------ right list (upcoming) */
+#deadlines { list-style: none; margin: 0; padding-left: 0; padding-right: 0; }
+.dl {
+  display: grid;
+  grid-template-columns: 1.4rem minmax(0, 1fr) auto;
+  gap: 1.1rem;
+  align-items: center;
+  padding: 1.45rem 0;
+  border-bottom: 1px solid var(--line);
+}
+.dl:last-child { border-bottom: 0; }
+#deadlines.no-count .dl { grid-template-columns: 1.4rem minmax(0, 1fr); }  /* countdowns turned off */
+.dl .overdue-note { color: var(--danger); }
+.dot { width: .8rem; height: .8rem; border-radius: 50%; background: var(--c); align-self: start; margin-top: 1rem; }
+.dl-title { font-size: 2.2rem; font-weight: 600; line-height: 1.18; letter-spacing: -.01em; }
+.dl .meta { margin-top: .4rem; }
+.count {
+  font-size: 2.9rem;
+  font-weight: 450;
+  font-stretch: 85%;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -.01em;
+  white-space: nowrap;
+  text-align: right;
+}
+.count small { font-size: .55em; font-weight: 600; color: var(--ink-2); margin-left: .35rem; letter-spacing: 0; }
+.count.soon { color: var(--accent); font-weight: 520; }
+.count.on { color: var(--accent); font-weight: 600; }  /* an event that is on now */
+.count.over {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  color: var(--danger);
+  font-weight: 520;
+}
+.count.over .od {
+  font-size: 1.25rem;
+  font-weight: 650;
+  font-stretch: 100%;
+  letter-spacing: .01em;
+  margin-top: .2rem;
+}
+.count.over small { color: color-mix(in srgb, var(--danger) 75%, transparent); }
+
+/* ------------------------------------------------------------------ checking off tasks (app.js)
+   The task's ring is a button (macOS, when Google allows it). Checked: the ring fills with a
+   check, the title is struck through and the rest of the row dims until the undo window ends. */
+.check {
+  position: relative;
+  -webkit-appearance: none;
+  appearance: none;
+  padding: 0;
+  border: 0;
+  font: inherit;
+  color: inherit;
+  background: transparent;
+  cursor: pointer;
+  transition: background-color .2s ease;
+}
+/* the hit target: the ring and a margin around it, never under 24 px. Not to the left: the
+   ring sits on the edge of its list's viewport, which clips there. */
+.check::before {
+  content: "";
+  position: absolute;
+  inset: calc(-1 * max(.75rem, (24px - 100%) / 2)) calc(-1 * max(1rem, 24px - 100%)) calc(-1 * max(.75rem, (24px - 100%) / 2)) 0;
+  border-radius: 1rem;
+}
+.check svg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  fill: none;
+  stroke: var(--c);
+  stroke-width: 2.4;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-dasharray: 12;
+  stroke-dashoffset: 12;
+  opacity: 0;
+  transition: stroke-dashoffset .28s cubic-bezier(.3,.7,.2,1), opacity .2s ease;
+}
+.check:hover { background: color-mix(in srgb, var(--c) 18%, transparent); }
+.check:hover svg { stroke-dashoffset: 0; opacity: .6; }
+.check:focus { outline: none; }
+.check:focus-visible { outline: 2px solid color-mix(in srgb, var(--accent) 70%, transparent); outline-offset: .3rem; }
+.checked .check { background: var(--c); }
+.checked .check svg { stroke: var(--on-c); stroke-dashoffset: 0; opacity: 1; }
+.has-check > :not(.check) { transition: opacity .25s ease; }
+.checked > :not(.check) { opacity: .5; }
+.checked .t-title, .checked .dl-title {
+  text-decoration: line-through;
+  text-decoration-thickness: .07em;
+  text-decoration-color: color-mix(in srgb, var(--ink) 75%, transparent);
+}
+/* the right list: a ring for tasks (events keep their dot) */
+#deadlines.checks .dl { grid-template-columns: 1.6rem minmax(0, 1fr) auto; }
+#deadlines.checks.no-count .dl { grid-template-columns: 1.6rem minmax(0, 1fr); }
+#deadlines.checks .dot { justify-self: center; }
+.dl .ring { width: 1.6rem; height: 1.6rem; margin-top: .5rem; align-self: start; }
+/* why a task couldn't be checked off (it is back in the list) */
+.check-note {
+  margin-top: .65rem;
+  font-size: 1.5rem;
+  font-weight: 500;
+  color: var(--ink-2);
+  animation: note-in .35s ease both;
+  transition: opacity .4s ease;
+}
+.check-note::before {
+  content: "";
+  display: inline-block;
+  vertical-align: .1em;
+  width: .6rem;
+  height: .6rem;
+  margin-right: .6rem;
+  border-radius: 50%;
+  background: var(--danger);
+}
+.check-note.gone { opacity: 0; }
+@keyframes note-in { from { opacity: 0; } }
+
+/* ------------------------------------------------------------------ weather */
+.weather { padding-bottom: 2.25rem; }
+.now { display: grid; grid-template-columns: auto auto 1fr; gap: 1.75rem; align-items: center; flex: none; margin-top: .9rem; }
+.now .icon { width: 6.5rem; height: 6.5rem; }
+.temp {
+  font-size: 8.6rem;
+  font-weight: 330;
+  font-stretch: 85%;
+  line-height: .85;
+  letter-spacing: -.04em;
+}
+.cond { font-size: 2.5rem; font-weight: 600; letter-spacing: -.01em; }
+.cond-sub { font-size: 1.55rem; color: var(--ink-2); margin-top: .5rem; display: flex; gap: 1.1rem; flex-wrap: wrap; }
+.stale { font-size: 1.4rem; color: var(--accent); margin-top: .4rem; }
+/* no location yet: just the empty state, centred in the card */
+.weather.no-loc .now { display: flex; flex: 1 1 auto; align-items: center; margin-top: 0; }
+.weather.no-loc .chips, .weather.no-loc #hourly-vp { display: none; }
+.chips { display: grid; grid-template-columns: repeat(4, 1fr); gap: .9rem; margin: 1.6rem 0 1rem; flex: none; }
+.chip {
+  padding: 1rem 1.15rem 1.1rem;
+  border-radius: 1.4rem;
+  background: var(--chip);
+  box-shadow: inset 0 0 0 1px var(--line);
+}
+.chip span { display: block; font-size: 1.3rem; font-weight: 500; color: var(--ink-2); }
+.chip b { display: block; margin-top: .3rem; font-size: 2.05rem; font-weight: 600; font-variant-numeric: tabular-nums; white-space: nowrap; }
+#hourly-vp { flex: 1 1 auto; min-height: 13rem; margin: 0 -2.75rem; }
+#hourly { display: flex; height: 100%; align-items: stretch; padding: 0 2.75rem; width: max-content; }
+.hr {
+  width: 7.4rem;
+  flex: none;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: .7rem;
+  border-radius: 1.6rem;
+  font-variant-numeric: tabular-nums;
+}
+.hr .h { font-size: 1.45rem; font-weight: 500; color: var(--ink-2); white-space: nowrap; }
+.hr .icon { width: 2.9rem; height: 2.9rem; }
+.hr .tv { font-size: 2.2rem; font-weight: 600; }
+.hr .pop { font-size: 1.3rem; font-weight: 600; color: var(--accent); min-height: 1.6rem; }
+.hr.is-now { background: var(--chip); box-shadow: inset 0 0 0 1.5px color-mix(in srgb, var(--accent) 40%, transparent); }
+.hr.is-now .h { color: var(--ink); font-weight: 650; }
+.hr.sun .tv { font-size: 1.8rem; }
+.hr.past { opacity: .5; }
+.icon { display: block; stroke: currentColor; fill: none; stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round; overflow: visible; }
+.icon .fill { fill: currentColor; stroke: none; }
+
+/* ------------------------------------------------------------------ word + fact */
+.words {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0 2.5rem;
+  padding-top: 2.3rem;
+  padding-bottom: 2.3rem;
+}
+.words > * { min-width: 0; }
+.words h2 { margin-bottom: .7rem; }
+.word {
+  font-family: "Newsreader", serif;
+  font-style: italic;
+  font-size: 4.2rem;
+  font-weight: 500;
+  font-variation-settings: "opsz" 72;
+  line-height: 1;
+  letter-spacing: -.01em;
+}
+.word-meta { display: flex; gap: 1.2rem; margin-top: .6rem; font-size: 1.5rem; color: var(--ink-2); }
+.word-meta i { font-style: italic; }
+.prose {
+  font-family: "Newsreader", serif;
+  font-size: 1.85rem;
+  line-height: 1.36;
+  font-variation-settings: "opsz" 18;
+  margin: .8rem 0 0;
+  text-wrap: pretty;
+}
+.fact { padding-left: 2.5rem; border-left: 1px solid var(--line); }
+.fact .prose { margin-top: 0; }
+.source { font-size: 1.25rem; color: var(--ink-3); margin-top: .6rem; }
+
+/* ------------------------------------------------------------------ curtain + debug */
+#curtain { position: fixed; inset: 0; background: #000; pointer-events: none; z-index: 20; }
+#debug {
+  position: fixed; left: 1rem; bottom: 1rem; z-index: 30;
+  font: 600 1.2rem/1.4 "Bricolage", sans-serif; color: #fff;
+  background: rgba(0,0,0,.6); padding: .6rem 1rem; border-radius: .8rem; white-space: pre;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .card, .ev, .gauge, .check, .check svg, .has-check > *, .check-note { transition: none; animation: none; }
+}
+
+/* ------------------------------------------------------------------ card edges: faint rim
+   A faint rim light and no inset edge lines. The resting and highlighted
+   shadows share one structure (the ring is just transparent at rest), so the
+   highlight on the list being scrolled fades in and out instead of snapping. */
+.card::before { opacity: .3; }
+.card {
+  box-shadow:
+    inset 0 0 0 2px transparent,
+    0 2.25rem 4.5rem -1.75rem var(--shade);
+}
+.card.engaged {
+  box-shadow:
+    inset 0 0 0 2px color-mix(in srgb, var(--accent) 60%, transparent),
+    0 2.25rem 4.5rem -1.75rem var(--shade);
+}
+
+/* ------------------------------------------------------------------ macOS overlay mode (?mac=1)
+   The HUD sits over the desktop in a transparent window: no black page or
+   curtain, the sky fades in and out instead, and the pointer stays visible. */
+html.mac, html.mac body { background: transparent; }
+body.mac { cursor: auto; }
+body.mac #curtain { display: none; }
+
+/* Mac screens are taller than the 16:9 wall monitor, and the extra height used to
+   go to the weather card. Here the weather card keeps the height its content
+   needs (38.5rem), the word + fact card takes an equal share of the rest (never
+   less than 23.5rem), and the hourly items, including the "Now" highlight, are
+   only as tall as their time, icon and temperature (rain chance when there is one). */
+html.mac #stage { grid-template-rows: 14rem minmax(38.5rem, 1fr) minmax(23.5rem, 1fr); }
+html.mac #hourly-vp { display: flex; align-items: center; }
+html.mac #hourly { height: auto; flex: none; align-items: flex-start; }
+html.mac .hr { padding: 1.15rem 0 1.25rem; }
+html.mac .hr .pop { min-height: 0; }
+html.mac .hr .pop:empty { display: none; }
