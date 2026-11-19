@@ -1,4 +1,4 @@
-// Hotkeys.swift — the keyboard shortcut (Settings › Controls, default fn ⇧ H)
+// Hotkeys.swift — the keyboard shortcut (Settings › Controls, default ⌃ ⌘ H)
 // opens Waverly from anywhere and closes it again; Esc also closes it.
 //
 // fn cannot be part of a Carbon RegisterEventHotKey shortcut, so this uses a

@@ -115,8 +115,9 @@ def keyword_match(title: str, kw: tuple[list[str], list[str]]) -> bool:
 
 
 def source_defaults(calendars: list, tasklists: list) -> dict:
-    """sources == null: left = calendars shown in Google Calendar, right = every task list."""
-    return {"left": ["cal:" + c["id"] for c in calendars if c.get("selected") and not c.get("hidden")],
+    """sources == null: left = every calendar (except ones hidden from Google Calendar's
+    list), right = every task list."""
+    return {"left": ["cal:" + c["id"] for c in calendars if not c.get("hidden")],
             "right": ["tasks:" + t["id"] for t in tasklists]}
 
 

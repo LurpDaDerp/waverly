@@ -23,7 +23,7 @@ enum WeatherDetail: String, CaseIterable { case low, medium, high }
 enum ScrollSpeed {
     static let range = 0.5...2.0
     static let step = 0.25
-    static let defaultValue = 1.0
+    static let defaultValue = 1.25
     /// Not a number -> the default; otherwise clamped to the range, kept to hundredths.
     static func validated(_ v: Double?) -> Double {
         guard let v, v.isFinite else { return defaultValue }
@@ -65,7 +65,7 @@ struct ListConfig: Equatable {
     var countdowns: Bool                // right list only
     var lookaheadDays: Int              // right list only
 
-    static let leftDefault = ListConfig(title: "Calendar", sources: nil, eventKeywords: "", taskKeywords: "",
+    static let leftDefault = ListConfig(title: "Calendars", sources: nil, eventKeywords: "", taskKeywords: "",
                                         countdowns: true, lookaheadDays: 30)
     static let rightDefault = ListConfig(title: "Tasks", sources: nil, eventKeywords: "", taskKeywords: "",
                                          countdowns: true, lookaheadDays: 30)
@@ -101,15 +101,15 @@ struct LabelCategory: Identifiable, Equatable {
     @Published var theme: Theme = .adaptive
     @Published var parallax = true
     @Published var weatherAnimation = true
-    @Published var weatherDetail: WeatherDetail = .high
+    @Published var weatherDetail: WeatherDetail = .low
     /// Seconds; 0 = instant (AnimationLength).
     @Published var openAnimation = AnimationLength.open.defaultValue
     @Published var closeAnimation = AnimationLength.close.defaultValue
     @Published var openAnimationType: AnimationType = .fade
     @Published var closeAnimationType: AnimationType = .fade
     /// Hand-gesture scrolling only; the trackpad and mouse follow macOS.
-    @Published var scrollReverseVertical = false
-    @Published var scrollReverseHorizontal = false
+    @Published var scrollReverseVertical = true
+    @Published var scrollReverseHorizontal = true
     /// Hand-scrolling speed, a multiple of the standard speed (ScrollSpeed.range).
     @Published var scrollSpeedVertical = ScrollSpeed.defaultValue
     @Published var scrollSpeedHorizontal = ScrollSpeed.defaultValue
@@ -230,13 +230,13 @@ struct LabelCategory: Identifiable, Equatable {
         theme = (d["theme"] as? String).flatMap(Theme.init) ?? .adaptive
         parallax = Self.bool(d["parallax"]) ?? true
         weatherAnimation = Self.bool(d["weather_animation"]) ?? true
-        weatherDetail = (d["weather_detail"] as? String).flatMap(WeatherDetail.init) ?? .high
+        weatherDetail = (d["weather_detail"] as? String).flatMap(WeatherDetail.init) ?? .low
         openAnimation = AnimationLength.open.validated(Self.number(d[AnimationLength.open.key]))
         closeAnimation = AnimationLength.close.validated(Self.number(d[AnimationLength.close.key]))
         openAnimationType = (d["open_animation"] as? String).flatMap(AnimationType.init) ?? .fade
         closeAnimationType = (d["close_animation"] as? String).flatMap(AnimationType.init) ?? .fade
-        scrollReverseVertical = Self.bool(d["scroll_reverse_vertical"]) ?? false
-        scrollReverseHorizontal = Self.bool(d["scroll_reverse_horizontal"]) ?? false
+        scrollReverseVertical = Self.bool(d["scroll_reverse_vertical"]) ?? true
+        scrollReverseHorizontal = Self.bool(d["scroll_reverse_horizontal"]) ?? true
         scrollSpeedVertical = ScrollSpeed.validated(Self.number(d["scroll_speed_vertical"]))
         scrollSpeedHorizontal = ScrollSpeed.validated(Self.number(d["scroll_speed_horizontal"]))
         gestureOpenWave = Self.bool(d["gesture_open_wave"]) ?? true

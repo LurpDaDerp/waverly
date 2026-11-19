@@ -1,5 +1,5 @@
 // Permissions.swift — the three permissions Waverly asks for, in one place for the
-// setup wizard and Settings: Camera (hand gestures), Accessibility (fn ⇧ H and
+// setup wizard and Settings: Camera (hand gestures), Accessibility (the shortcut and
 // Esc from any app) and Location (local weather). Each one is optional.
 //
 // macOS doesn't announce most permission changes, so `refresh()` re-reads them;

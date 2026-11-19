@@ -25,7 +25,7 @@ CONFIG_FILE = Path(os.environ.get("HUD_CONFIG", str(STATE / "config.json")))
 
 # config.json is written only by the macOS app; these neutral defaults fill in
 # anything missing so partial or older files always work.
-LIST_TITLES = {"left": "Calendar", "right": "Tasks"}
+LIST_TITLES = {"left": "Calendars", "right": "Tasks"}
 LOOKAHEAD_DAYS = 30
 DEFAULTS = {
     "version": 2,
@@ -42,16 +42,16 @@ DEFAULTS = {
     "theme": "adaptive",               # adaptive (tone follows the sky) | light | dark
     "parallax": True,                  # head-tracking lean of the cards and shift of the sky
     "weather_animation": True,         # False: the ambient sky layer is drawn once, not animated
-    "weather_detail": "high",          # high | medium | low (low = sky gradient only)
+    "weather_detail": "low",           # high | medium | low (low = sky gradient only)
     "open_animation_s": 1.0,           # how long the HUD takes to appear (0 = instantly)
     "close_animation_s": 0.75,         # ...and to disappear (0 = instantly)
     "open_animation": "fade",          # fade | zoom | shatter | slide | swirl (hud/ui/anim.js)
     "close_animation": "fade",
     # Hand-gesture scrolling only (the trackpad always follows the system setting)
-    "scroll_reverse_vertical": False,
-    "scroll_reverse_horizontal": False,
-    "scroll_speed_vertical": 1.0,      # hand-scrolling speed, x the standard (SCROLL_SPEED_RANGE)
-    "scroll_speed_horizontal": 1.0,
+    "scroll_reverse_vertical": True,
+    "scroll_reverse_horizontal": True,
+    "scroll_speed_vertical": 1.25,     # hand-scrolling speed, x the standard (SCROLL_SPEED_RANGE)
+    "scroll_speed_horizontal": 1.25,
     # Which gestures open and close the HUD (Settings › Controls). With both open gestures
     # off, only the keyboard shortcut and the menu open it. hud-engine applies these live.
     "gesture_open_wave": True,         # open by waving: one sweep across the camera, palm to it

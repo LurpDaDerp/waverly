@@ -322,7 +322,7 @@ function renderClock(now = new Date()) {
 // card titles from the config ("" or missing = the default)
 function renderTitles() {
   const t = S.data?.config?.titles || {};
-  $("left-title").textContent = String(t.left ?? "").trim() || "Calendar";
+  $("left-title").textContent = String(t.left ?? "").trim() || "Calendars";
   $("right-title").textContent = String(t.right ?? "").trim() || "Tasks";
 }
 

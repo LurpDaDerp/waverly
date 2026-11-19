@@ -1,5 +1,5 @@
 // Shortcut.swift — the keyboard shortcut that opens and closes Waverly (config.json
-// "hotkey": {"key_code": 4, "modifiers": ["fn", "shift"], "display": "fn ⇧ H"}).
+// "hotkey": {"key_code": 4, "modifiers": ["control", "command"], "display": "⌃ ⌘ H"}).
 //
 // key_code is a macOS virtual key code (kVK_…), so a shortcut keeps working when the
 // keyboard layout changes; `display` is how it read on the keyboard it was recorded on.
@@ -47,10 +47,10 @@ struct Shortcut: Equatable {
 
     var keyCode: Int
     var modifiers: Set<Modifier>
-    /// How the shortcut reads, e.g. "fn ⇧ H".
+    /// How the shortcut reads, e.g. "⌃ ⌘ H".
     var display: String
 
-    static let `default` = Shortcut(keyCode: kVK_ANSI_H, modifiers: [.fn, .shift])
+    static let `default` = Shortcut(keyCode: kVK_ANSI_H, modifiers: [.control, .command])
 
     init(keyCode: Int, modifiers: Set<Modifier>, display: String? = nil) {
         self.keyCode = keyCode

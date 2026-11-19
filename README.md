@@ -23,7 +23,7 @@ Download: [latest release](https://github.com/LurpDaDerp/Waverly/releases/latest
 - **Something to read:** Merriam-Webster's word of the day and a Wikipedia "Did you know" fact.
 - **Yours to tune:** theme, open and close animations, parallax (the cards lean as your
   head moves), weather detail, hand-scroll direction and speed, which gestures are on,
-  and the keyboard shortcut (default **fn ⇧ H**).
+  and the keyboard shortcut (default **⌃ ⌘ H**).
 - **Light on battery:** hand tracking only runs while a hand is in view.
 - **Private:** no accounts, servers or analytics.
 

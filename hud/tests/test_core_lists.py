@@ -79,7 +79,7 @@ def test_defaults_are_neutral():
     assert DEFAULTS["name"] == "" and DEFAULTS["place"] == ""
     assert DEFAULTS["lat"] is None and DEFAULTS["lon"] is None
     assert DEFAULTS["http_port"] == 47780 and "timezone" not in DEFAULTS
-    assert DEFAULTS["lists"]["left"] == {"title": "Calendar", "sources": None, "event_keywords": "",
+    assert DEFAULTS["lists"]["left"] == {"title": "Calendars", "sources": None, "event_keywords": "",
                                          "task_keywords": ""}
     assert DEFAULTS["lists"]["right"] == {"title": "Tasks", "sources": None, "event_keywords": "",
                                           "task_keywords": "", "countdowns": True, "lookahead_days": 30}
@@ -94,7 +94,9 @@ def test_defaults_are_neutral():
                              "auto_close_away", "auto_close_dark"}
     assert (DEFAULTS["theme"], DEFAULTS["parallax"], DEFAULTS["weather_animation"], DEFAULTS["weather_detail"],
             DEFAULTS["scroll_reverse_vertical"], DEFAULTS["scroll_reverse_horizontal"]) == (
-        "adaptive", True, True, "high", False, False)
+        "adaptive", True, True, "low", True, True)
+    assert (DEFAULTS["scroll_speed_vertical"], DEFAULTS["scroll_speed_horizontal"]) == (1.25, 1.25)
+    assert (DEFAULTS["open_animation"], DEFAULTS["close_animation"]) == ("fade", "fade")
     assert (DEFAULTS["open_animation_s"], DEFAULTS["close_animation_s"]) == (1.0, 0.75)   # the default timing
 
 
@@ -105,7 +107,7 @@ def test_merge_config_deep_merges_lists():
     assert cfg["name"] == "Alex" and "timezone" not in cfg and cfg["extra"] == {"kept": 1}
     assert cfg["lists"]["right"] == {"title": "Tasks", "sources": ["tasks:L1"], "event_keywords": "",
                                      "task_keywords": "", "countdowns": True, "lookahead_days": 7}
-    assert cfg["lists"]["left"]["title"] == "Calendar" and cfg["lists"]["left"]["event_keywords"] == "sync"
+    assert cfg["lists"]["left"]["title"] == "Calendars" and cfg["lists"]["left"]["event_keywords"] == "sync"
     assert cfg["lists"]["left"]["sources"] is None
     assert DEFAULTS["lists"]["right"]["lookahead_days"] == 30   # defaults never mutated
     assert merge_config({}) == merge_config({"lists": "junk"}) == merge_config({"lists": {"left": 3}})
@@ -248,7 +250,7 @@ def test_system_tz_name():
 # ---------------------------------------------------------------------- sources
 def test_source_defaults_and_resolve():
     d = source_defaults(CALS, LISTS)
-    assert d == {"left": ["cal:work@group", "cal:family@group"], "right": ["tasks:L1", "tasks:L2"]}
+    assert d == {"left": ["cal:work@group", "cal:family@group", "cal:other@group"], "right": ["tasks:L1", "tasks:L2"]}
     cfg = merge_config({})
     assert resolve_sources(cfg, "left", CALS, LISTS) == d["left"]
     assert resolve_sources(cfg, "right", CALS, LISTS) == d["right"]
@@ -337,18 +339,18 @@ def test_compose_left_events():
             ev("f0", "Yesterday", "2026-11-16", "2026-11-17", all_day=True),
             ev("w5", "Report review", "2026-11-17T13:00:00-08:00", "2026-11-17T14:00:00-08:00"),  # shared invite
         ],
-        "cal:other@group": [ev("o1", "Not a left source", "2026-11-17", "2026-11-18", all_day=True)],
+        "cal:other@group": [ev("o1", "Holiday", "2026-11-17", "2026-11-18", all_day=True)],
     })
     lists = compose(raw, merge_config({}), {}, LA, NOW)
     assert lists["date"] == "2026-11-17"
     got = [e["id"] for e in lists["left"]["events"]]
-    assert got == ["f1", "w4", "w1", "w7", "w5", "w2"], got
+    assert got == ["f1", "o1", "w4", "w1", "w7", "w5", "w2"], got   # every calendar, unticked in Google too
     trip = lists["left"]["events"][0]
     assert trip["allDay"] and trip["start"] == "2026-11-16T00:00:00-08:00"
     assert trip["end"] == "2026-11-19T00:00:00-08:00"
     late = lists["left"]["events"][-1]
     assert late["start"] == "2026-11-17T23:30:00-08:00" and late["tag"]["label"] == "Work"
-    assert lists["left"]["events"][4]["tag"]["label"] == "Work"  # shared event shown once, first source wins
+    assert lists["left"]["events"][5]["tag"]["label"] == "Work"  # shared event shown once, first source wins
     assert lists["left"]["tasks"] == []                          # default left list: calendars only
     # Keyword filters apply to the left list's events.
     lists = compose(raw, cfg_with(left={"event_keywords": "review, call, -late"}), {}, LA, NOW)
@@ -468,12 +470,12 @@ def test_page_config_and_weather_key():
                         "lists": {"left": {"title": "  "}, "right": {"title": "Next", "countdowns": False}}})
     assert page_config(cfg) == {"name": "Alex", "place": "Lisbon", "lat": 38.7223, "lon": -9.1393,
                                 "temperature_unit": "celsius", "wind_unit": "kmh", "clock": "24h",
-                                "titles": {"left": "Calendar", "right": "Next"}, "countdowns": False,
+                                "titles": {"left": "Calendars", "right": "Next"}, "countdowns": False,
                                 "theme": "adaptive", "parallax": True, "weather_animation": True,
-                                "weather_detail": "high", "open_animation_s": 1.0, "close_animation_s": 0.75,
+                                "weather_detail": "low", "open_animation_s": 1.0, "close_animation_s": 0.75,
                                 "open_animation": "fade", "close_animation": "fade",
-                                "scroll_speed_vertical": 1.0, "scroll_speed_horizontal": 1.0,
-                                "scroll_reverse_vertical": False, "scroll_reverse_horizontal": False}
+                                "scroll_speed_vertical": 1.25, "scroll_speed_horizontal": 1.25,
+                                "scroll_reverse_vertical": True, "scroll_reverse_horizontal": True}
     prefs = merge_config({"theme": "light", "parallax": False, "weather_animation": False, "weather_detail": "medium",
                           "scroll_reverse_vertical": True, "scroll_reverse_horizontal": False, "hotkey": {"key_code": 4},
                           "dark_mean": 3})
@@ -483,7 +485,7 @@ def test_page_config_and_weather_key():
     assert "hotkey" not in pc and "dark_mean" not in pc   # only what the page needs
     pc = page_config(merge_config({"open_animation_s": 0, "close_animation_s": 1.5}))
     assert (pc["open_animation_s"], pc["close_animation_s"]) == (0.0, 1.5)
-    for given, want in ((1.5, 1.5), (0.1, 0.5), (9, 2.0), ("fast", 1.0), (True, 1.0), (None, 1.0), (float("nan"), 1.0)):
+    for given, want in ((1.5, 1.5), (0.1, 0.5), (9, 2.0), ("fast", 1.25), (True, 1.25), (None, 1.25), (float("nan"), 1.25)):
         pc = page_config(merge_config({"scroll_speed_vertical": given, "scroll_speed_horizontal": given}))
         assert (pc["scroll_speed_vertical"], pc["scroll_speed_horizontal"]) == (want, want), given
     pc = page_config(merge_config({"open_animation": "shatter", "close_animation": "swirl"}))
