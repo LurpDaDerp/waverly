@@ -493,6 +493,12 @@ private struct ControlsTab: View {
                             PanelDivider()
                             SwitchRow(title: "Fist, then open hand", detail: "Make a fist, then open your hand toward the camera",
                                       isOn: $config.gestureOpenFist)
+                            if config.gestureOpens {
+                                PanelDivider()
+                                SwitchRow(title: "On battery, shortcut only",
+                                          detail: "Saves battery: while your Mac is unplugged, the camera stays off until you open Waverly with \(config.hotkey.display) or from the menu bar",
+                                          isOn: $config.batteryShortcutOnly)
+                            }
                             if !config.gestureOpens {
                                 PanelDivider()
                                 CalmNote(text: "Waverly now opens only with \(config.hotkey.display) or from the menu bar.")

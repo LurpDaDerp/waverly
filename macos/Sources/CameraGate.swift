@@ -12,8 +12,9 @@
 //            (camera-want), or the overlay is visible. 640x480 @ 30 fps; every frame
 //            goes to the engine through the frame ring (converted to BGRA there).
 //   .paused  Screen locked, Mac asleep, another user's session active, the display
-//            asleep on battery (PowerPolicy), or the user paused the camera from the
-//            menu. Capture session stopped (light off).
+//            asleep on battery (PowerPolicy), the HUD closed on battery with "On battery,
+//            shortcut only" on (batteryShortcutOnly), or the user paused the camera from
+//            the menu. Capture session stopped (light off).
 //
 // Leaving .active (to idle or paused) clears the frame ring, so no camera frame stays in
 // its file; shutdown() (the app quits) also deletes the ring.
@@ -68,7 +69,7 @@ final class CameraGate: NSObject, AVCaptureVideoDataOutputSampleBufferDelegate {
     }
     var overlayVisible = false {
         didSet {
-            let v = overlayVisible
+            let v = overlayVisible, battery = batteryPauseWanted
             queue.async {
                 self.qOverlayVisible = v
                 if v {
@@ -77,9 +78,18 @@ final class CameraGate: NSObject, AVCaptureVideoDataOutputSampleBufferDelegate {
                     // typing made stale before it opened is current again.
                     self.engineWantsStale = false
                 }
+                self.setPauseReason("battery", battery)
                 self.reevaluate()
             }
         }
+    }
+    /// Settings › Controls › "On battery, shortcut only" (config.json battery_shortcut_only):
+    /// while the Mac runs on battery and the HUD is closed, the camera is off (pause reason
+    /// "battery"), so nothing but the keyboard shortcut or the menu opens the HUD. Opening it
+    /// starts the camera again (scrolling, the close gestures and closing by itself work as
+    /// usual); closing it, or unplugging the Mac while it is closed, stops it.
+    var batteryShortcutOnly = false {
+        didSet { if batteryShortcutOnly != oldValue { updateBatteryPause() } }
     }
 
     private let ring: FrameRingWriter
@@ -123,10 +133,12 @@ final class CameraGate: NSObject, AVCaptureVideoDataOutputSampleBufferDelegate {
         super.init()
         power.onChange = { [weak self] p in
             let pause = p.shouldPauseCamera, summary = p.summary
+            let battery = self?.batteryPauseWanted ?? false
             self?.queue.async {
                 guard let self else { return }
                 AppLog.info("camera: power state: \(summary)")
-                if pause { self.pauseReasons.insert("display") } else { self.pauseReasons.remove("display") }
+                self.setPauseReason("display", pause)
+                self.setPauseReason("battery", battery)
                 self.reevaluate()
             }
         }
@@ -355,6 +367,20 @@ final class CameraGate: NSObject, AVCaptureVideoDataOutputSampleBufferDelegate {
     func resume(reason: String) {
         DispatchQueue.main.async { if reason == "user" { self.userPaused = false } }
         queue.async { self.pauseReasons.remove(reason); self.reevaluate() }
+    }
+
+    /// Main thread: the camera should be off for batteryShortcutOnly right now.
+    private var batteryPauseWanted: Bool { batteryShortcutOnly && power.onBattery && !overlayVisible }
+
+    /// Main thread: apply batteryShortcutOnly after the setting changed.
+    private func updateBatteryPause() {
+        let battery = batteryPauseWanted
+        queue.async { self.setPauseReason("battery", battery); self.reevaluate() }
+    }
+
+    /// On `queue`: add or remove one pause reason (the caller reevaluates).
+    private func setPauseReason(_ reason: String, _ on: Bool) {
+        if on { pauseReasons.insert(reason) } else { pauseReasons.remove(reason) }
     }
 
     private func setEngineWants(_ v: Bool) {

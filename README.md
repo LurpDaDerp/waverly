@@ -24,7 +24,9 @@ Download: [latest release](https://github.com/LurpDaDerp/Waverly/releases/latest
 - **Yours to tune:** theme, open and close animations, parallax (the cards lean as your
   head moves), weather detail, hand-scroll direction and speed, which gestures are on,
   and the keyboard shortcut (default **⌃ ⌥ W**).
-- **Light on battery:** hand tracking only runs while a hand is in view.
+- **Light on battery:** hand tracking only runs while a hand is in view. To save more,
+  turn on **On battery, shortcut only**: unplugged, the camera stays off until you open
+  Waverly with the shortcut.
 - **Private:** no accounts, servers or analytics.
 
 ## Requirements
@@ -68,8 +70,8 @@ Controls**; with both open gestures off, only the shortcut and the menu open Wav
 - **Appearance:** theme (Adaptive, Light, Dark), units, 12/24-hour clock, parallax,
   weather animation and detail, and the open and close animation (Fade, Zoom, Shatter,
   Slide, Swirl) and length.
-- **Controls:** keyboard shortcut, which gestures open and close Waverly, hand-scroll
-  direction and speed.
+- **Controls:** keyboard shortcut, which gestures open and close Waverly, whether they
+  open it on battery (**On battery, shortcut only**), hand-scroll direction and speed.
 - **Lists:** each list's title, sources, keyword filters, look-ahead and countdowns.
 - **Labels:** colours for calendars and task lists, and shared categories.
 - **Google:** connect, reconnect or disconnect; under Advanced, your own OAuth client.
@@ -148,7 +150,10 @@ While Waverly is closed, MediaPipe doesn't run: the camera samples 5 frames a se
 Apple Vision looks for a hand only when something moves. A clear hand switches to 30 fps
 for the engine, which lets go about 1.5 s after the hand is still or gone. The camera
 pauses while the screen is locked or the Mac sleeps (and, on battery, while the display
-sleeps).
+sleeps). Keeping the camera on is most of Waverly's battery cost: macOS processes every
+frame at the camera's lowest rate (15 fps), however few the app looks at. With **On
+battery, shortcut only** on, the camera is off on battery while Waverly is closed and
+starts when the shortcut or the menu opens it.
 
 ```
 macos/Sources/   the Swift app          hud/python/hud/  hud-core, hud-engine, gestures

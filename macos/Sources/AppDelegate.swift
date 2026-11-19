@@ -128,6 +128,10 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate, Camera
         if let ring {
             camera = CameraGate(ring: ring, testVideo: TestVideoSource())
             camera?.delegate = self
+            // Settings › Controls › "On battery, shortcut only" (now, and whenever it changes)
+            ConfigStore.shared.$batteryShortcutOnly.removeDuplicates().sink { [weak self] on in
+                self?.camera?.batteryShortcutOnly = on
+            }.store(in: &watchers)
         }
         step("camera")
 
@@ -775,6 +779,7 @@ extension AppDelegate {
         case "gesture_close_fist": guard let v = flag() else { return "true | false" }; c.gestureCloseFist = v
         case "auto_close_away": guard let v = flag() else { return "true | false" }; c.autoCloseAway = v
         case "auto_close_dark": guard let v = flag() else { return "true | false" }; c.autoCloseDark = v
+        case "battery_shortcut_only": guard let v = flag() else { return "true | false" }; c.batteryShortcutOnly = v
         case "scroll_speed_vertical", "scroll_speed_horizontal":
             guard let v = Double(value), v.isFinite else { return "0.5…2 (times the standard speed)" }
             if key == "scroll_speed_vertical" { c.scrollSpeedVertical = ScrollSpeed.validated(v) }

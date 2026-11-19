@@ -120,6 +120,9 @@ struct LabelCategory: Identifiable, Equatable {
     @Published var gestureCloseFist = true         // gesture_close_fist: an open palm, then a fist
     @Published var autoCloseAway = true            // auto_close_away: nobody seen for away_seconds
     @Published var autoCloseDark = true            // auto_close_dark: the room dark for away_seconds
+    /// battery_shortcut_only: on battery, the camera is off while the HUD is closed, so only the
+    /// keyboard shortcut and the menu open it (CameraGate.batteryShortcutOnly). Off by default.
+    @Published var batteryShortcutOnly = false
     /// Opens and closes the HUD (Hotkeys.swift).
     @Published var hotkey = Shortcut.default
     @Published var left = ListConfig.leftDefault
@@ -244,6 +247,7 @@ struct LabelCategory: Identifiable, Equatable {
         gestureCloseFist = Self.bool(d["gesture_close_fist"]) ?? true
         autoCloseAway = Self.bool(d["auto_close_away"]) ?? true
         autoCloseDark = Self.bool(d["auto_close_dark"]) ?? true
+        batteryShortcutOnly = Self.bool(d["battery_shortcut_only"]) ?? false
         hotkey = Shortcut(json: d["hotkey"]) ?? .default
         let lists = d["lists"] as? [String: Any]
         left = Self.list(lists?["left"], ListConfig.leftDefault)
@@ -329,6 +333,7 @@ struct LabelCategory: Identifiable, Equatable {
         d["gesture_close_fist"] = gestureCloseFist
         d["auto_close_away"] = autoCloseAway
         d["auto_close_dark"] = autoCloseDark
+        d["battery_shortcut_only"] = batteryShortcutOnly
         d["hotkey"] = hotkey.json
         if d["http_port"] == nil { d["http_port"] = Self.defaultPort }
         d.removeValue(forKey: "timezone")                    // always the Mac's own time zone now

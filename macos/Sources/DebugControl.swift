@@ -14,6 +14,7 @@
 //                           open_animation / close_animation (fade | zoom | shatter | slide | swirl),
 //                           scroll_speed_vertical / scroll_speed_horizontal (0.5…2),
 //                           gesture_open_wave, gesture_open_fist, gesture_close_fist, auto_close_away, auto_close_dark,
+//                           battery_shortcut_only,
 //                           scroll_reverse_vertical, scroll_reverse_horizontal, hotkey (<key code> <fn,shift,…> | default)
 //   hotkey-test <code> [mods] [visible] [repeat]   what the key tap would do with that key press
 //   installer | install     the Python environment installer's state | start it
