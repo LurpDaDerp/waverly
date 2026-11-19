@@ -521,7 +521,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate, Camera
 
     func menuWillOpen(_ menu: NSMenu) { refreshMenu() }
 
-    /// "Show Waverly  (⌃ ⌘ H)", with the shortcut chosen in Settings.
+    /// "Show Waverly  (⌃ ⌥ W)", with the shortcut chosen in Settings.
     private static var showTitle: String { "Show Waverly  (\(ConfigStore.shared.hotkey.display))" }
 
     private func refreshMenu() {
