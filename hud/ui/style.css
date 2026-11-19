@@ -52,7 +52,7 @@
 @property --cover { syntax: "<number>"; inherits: true; initial-value: 0; }
 
 html {
-  /* 1rem = 16px on the 2560x1440 monitor, scaled for any other size */
+  /* 1rem = 16px on a 2560x1440 screen, scaled for any other size */
   font-size: min(calc(100vw / 160), calc(100vh / 90));
   background: #000;
 }
@@ -742,7 +742,7 @@ html.mac, html.mac body { background: transparent; }
 body.mac { cursor: auto; }
 body.mac #curtain { display: none; }
 
-/* Mac screens are taller than the 16:9 wall monitor, and the extra height used to
+/* Mac screens are taller than 16:9, and in the base layout the extra height would
    go to the weather card. Here the weather card keeps the height its content
    needs (38.5rem), the word + fact card takes an equal share of the rest (never
    less than 23.5rem), and the hourly items, including the "Now" highlight, are

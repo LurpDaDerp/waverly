@@ -202,8 +202,8 @@ class FrameReader:
 
 
 class FrameWriter:
-    """Reference writer, used by tools/fake_camera.py. The macOS app implements
-    exactly this in Swift (see BUILD_PROMPT.md, "Frame ring")."""
+    """Python writer, used by tools/fake_camera.py and the tests. The macOS app
+    writes the same format in Swift (macos/Sources/FrameRingWriter.swift)."""
 
     def __init__(self, shm_path: Path, sock_path: Path, width=640, height=480, slots=3):
         self.shm_path, self.sock_path = Path(shm_path), Path(sock_path)

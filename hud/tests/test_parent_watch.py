@@ -24,7 +24,7 @@ atexit.register(shutil.rmtree, _TMP, ignore_errors=True)
 os.environ["HUD_STATE"] = str(_TMP)  # the helpers inherit it: nothing may touch the real state folder
 os.environ["HUD_CONFIG"] = str(_TMP / "config.json")
 
-# The helper: watch the parent, then idle. `no_kqueue` takes the polling path (Linux).
+# The helper: watch the parent, then idle. `no_kqueue` takes the polling fallback.
 HELPER = """
 import logging, select, sys, time
 from pathlib import Path

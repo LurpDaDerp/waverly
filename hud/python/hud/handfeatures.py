@@ -1,12 +1,11 @@
-"""MediaPipe models and hand measurements, shared by every platform.
+"""MediaPipe models and hand measurements for hud-engine.
 
-The shape and openness measurements come from the Linux hud-vision service
-(hud/vision.py), the reference implementation. hand_evidence() and observe() are
-additions: they score how much a detection looks like a real hand, so a phantom
-"hand" on a face leaning toward the camera cannot open the HUD. palm_orientation()
-is one too: which way the palm faces, so only a palm toward the camera wakes the HUD. Do not change
-thresholds here without re-validating them with tests/test_gestures.py and
-tools/replay_video.py.
+hand_shape(), hand_strict() and hand_openness() describe the hand.
+hand_evidence() and observe() score how much a detection looks like a real hand,
+so a phantom "hand" on a face leaning toward the camera cannot open the HUD.
+palm_orientation() tells which way the palm faces, so only a palm toward the
+camera wakes the HUD. Do not change thresholds here without re-validating them
+with tests/test_gestures.py and tools/replay_video.py.
 """
 from __future__ import annotations
 
@@ -72,7 +71,7 @@ def hand_openness(world: np.ndarray) -> float:
     Each finger's straightness is its base-to-tip distance over its bone length,
     averaged over the four fingers (the thumb barely curls in a fist). Calibrated
     on the user's hand through this webcam: open hand ~0.96 or more, fist ~0.43
-    (the webcam sees a fist a little looser than the reference photo did)."""
+    (the webcam sees a fist a little looser than a still photo does)."""
     s = 0.0
     for a, b, c, d in _CHAINS[1:]:
         bones = np.linalg.norm(world[b] - world[a]) + np.linalg.norm(world[c] - world[b]) + np.linalg.norm(world[d] - world[c])

@@ -4,9 +4,9 @@
 //        ▲                                                                  │  ▲
 //        └──── camera-want / overlay requests ◀──── CoreLink (ws /ws) ◀──────┘  └── force, overlay-ready / -hidden, camera
 //
-// The engine owns the overlay's state (asleep → waking → awake → sleeping), exactly
-// as on Linux. The app carries out its requests (show / hide the overlay, run
-// the camera at the right rate, wake the display) and reports keyboard input.
+// The engine owns the overlay's state (asleep → waking → awake → sleeping). The
+// app carries out its requests (show / hide the overlay, run the camera at the
+// right rate, wake the display) and reports keyboard input.
 // It also keeps the overlay in step with the engine if a helper dies, so an
 // invisible overlay can never be left covering the screen.
 //
@@ -327,7 +327,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate, Camera
         let req = overlayRequest
         closeFailsafe?.cancel()
         camera?.overlayVisible = true                         // full frame rate from now on
-        DisplayWaker.wakeIfAsleep { [weak self] in            // like Linux waits for the monitor
+        DisplayWaker.wakeIfAsleep { [weak self] in            // the fade-in waits for the display
             guard let self, req == self.overlayRequest else { return }
             self.asleepWhileVisible = 0
             overlay.show {
@@ -821,7 +821,7 @@ enum LoginItem {
     }
 }
 
-/// The macOS version of Linux's "wait for the monitor before the fade-in".
+/// Wakes a sleeping display before the HUD fades in, so the animation isn't missed.
 enum DisplayWaker {
     private static var assertion: IOPMAssertionID = 0
 

@@ -41,7 +41,7 @@ import aiohttp
 from aiohttp import web
 from yarl import URL
 
-from .common import (CONFIG_FILE, PALETTE, STATE, UI_DIR, ConfigError, file_stamp, load_config, read_json, sd_notify,
+from .common import (CONFIG_FILE, PALETTE, STATE, UI_DIR, ConfigError, file_stamp, load_config, read_json,
                      setup_logging, system_tz, system_tz_name, watch_parent, write_json_atomic)
 from .gcal import (CLIENT_FILE, TOKEN_FILE, AuthError, Forbidden, Google, NotFound, assign_colors, compose,
                    effective_color, fetch_signature, list_title, read_obj, source_defaults, tasks_writable)
@@ -690,11 +690,6 @@ class Core:
                 self.vision = None
         return ws
 
-    async def watchdog(self):
-        while True:
-            sd_notify("WATCHDOG=1")
-            await asyncio.sleep(5)
-
     async def run(self):
         async with aiohttp.ClientSession(headers={"User-Agent": UA}) as s:
             self.session = s
@@ -710,9 +705,8 @@ class Core:
             await runner.setup()
             await web.TCPSite(runner, "127.0.0.1", self.port).start()
             log.info("listening on 127.0.0.1:%d", self.port)
-            sd_notify("READY=1")
             await asyncio.gather(self.weather_loop(s), self.daily_loop(s), self.google_loop(),
-                                 self.config_loop(), self.watchdog())
+                                 self.config_loop())
 
 
 def main():

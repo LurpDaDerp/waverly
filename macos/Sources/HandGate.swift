@@ -1,4 +1,4 @@
-// HandGate.swift — stage 1 of the battery-first detector (BUILD_PROMPT.md §6).
+// HandGate.swift — stage 1 of the battery-first detector (CameraGate.swift).
 //
 // While the HUD is closed the camera delivers its slowest rate (15 fps on most Mac
 // cameras) in its native biplanar YUV, and CameraGate hands this gate 5 frames a

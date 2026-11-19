@@ -1,7 +1,7 @@
 """Behavioural tests for the gesture engine (hud/gestures.py).
 
-The scroll, close and wake scenarios were validated against the Linux HUD and must
-pass unchanged. The wake-confidence scenarios (phantom hands on a face, flicker,
+The scroll, close and wake scenarios are the baseline behaviour and must pass
+unchanged. The wake-confidence scenarios (phantom hands on a face, flicker,
 the close-then-relax loop) were added with the hand evidence score. The palm
 orientation scenarios (head scratching edge-on, the back of the hand, tilted palms)
 were added with the facing requirement. The wave is one sweep of the open hand across

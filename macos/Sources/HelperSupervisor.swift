@@ -1,6 +1,6 @@
 // HelperSupervisor.swift — runs the two Python helpers (hud-core, hud-engine)
 // from the app's Python environment, restarts them if they exit, and checks
-// hud-core's /health. This replaces the Linux systemd units + hud-watchdog.
+// hud-core's /health every 10 s, restarting a helper that stops responding.
 //
 // Paths:
 //   python   ~/Library/Application Support/Waverly/venv/bin/python   (EnvironmentInstaller, tools/setup_macos.sh)
@@ -223,7 +223,7 @@ final class HelperSupervisor {
         }
     }
 
-    // MARK: health (same checks as the Linux hud-watchdog)
+    // MARK: health (core unresponsive for 60 s, engine silent or its worker dead: restart it)
 
     private func checkHealth() {
         guard !stopping, let url = URL(string: "http://127.0.0.1:\(port)/health") else { return }

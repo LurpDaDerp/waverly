@@ -1,6 +1,6 @@
 // CameraGate.swift — owns the camera and decides, as cheaply as possible, when
-// the Python engine needs to see frames (BUILD_PROMPT.md §6). This is the macOS
-// replacement for the Linux service's presence gating, built for battery life.
+// the Python engine needs to see frames. Built for battery life: the engine only
+// gets frames while a hand might be in view or the HUD is open.
 //
 // Modes
 //   .idle    HUD closed, nothing happening. The camera runs at its slowest rate in

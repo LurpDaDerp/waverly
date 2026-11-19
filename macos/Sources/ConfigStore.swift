@@ -1,4 +1,4 @@
-// ConfigStore.swift — the in-memory model of config.json (spec §2), the single
+// ConfigStore.swift — the in-memory model of config.json, the single
 // source of truth for the helpers. Only the app writes the file: every change
 // is saved, debounced (0.4 s) and atomically (temp file + rename), readable only
 // by the user (0600, in a 0700 folder); keys the app does not know (engine tuning,

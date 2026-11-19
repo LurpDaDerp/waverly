@@ -1,16 +1,15 @@
-"""hud-engine (macOS): hand gestures, presence and head tracking for the HUD.
+"""hud-engine: hand gestures, presence and head tracking for the HUD.
 
-This is the macOS counterpart of the Linux hud-vision service (hud/vision.py on
-the Linux machine). The gesture logic (gestures.py), the hand measurements
-(handfeatures.py) and the models are identical. What differs:
+The gesture logic lives in gestures.py and the hand measurements in
+handfeatures.py; this service connects them to the app and to hud-core:
 
   * Frames: the macOS app owns the camera and writes frames into a shared-memory
     ring (framering.py). The app decides the cheap stage-1 gating (darkness,
     motion, Apple Vision hand detection at low frame rate); this engine only sees
     frames while something might be happening, and runs on every frame it gets.
-  * Display: instead of turning a monitor on/off, the engine asks the app to show
-    or hide the overlay window and waits for the app's "overlay-ready" reply
-    before the wake animation starts (the Linux version waited for the monitor).
+  * Display: the engine asks the app to show or hide the overlay window and waits
+    for the app's "overlay-ready" reply (sent once a sleeping display is awake)
+    before the wake animation starts.
   * Camera hints: the engine tells the app when it needs full-rate frames
     ({"t": "camera-want", "active": bool}) so the app can drop to its low-power
     mode otherwise.
@@ -120,7 +119,7 @@ class EngineService:
         if self.loop:
             self.loop.call_soon_threadsafe(lambda: asyncio.ensure_future(self._transition(what, reason)))
 
-    # ---- overlay (replaces the Linux monitor power control)
+    # ---- overlay: ask the app to show / hide the window, wait for its reply
     async def _overlay(self, show: bool, timeout: float) -> float:
         t0 = time.monotonic()
         ev = self.overlay_ready if show else self.overlay_hidden
@@ -132,7 +131,7 @@ class EngineService:
             log.warning("app did not confirm overlay %s within %.0fs", "shown" if show else "hidden", timeout)
         return time.monotonic() - t0
 
-    # ---- state machine (same as Linux hud-vision)
+    # ---- state machine: asleep -> waking -> awake -> sleeping
     async def _transition(self, what, reason=""):
         if what == "wake" and self.state == "sleeping":
             # woken while the HUD is still fading out: turn around instead of dropping it

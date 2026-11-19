@@ -6,8 +6,6 @@ import logging
 import math
 import os
 import select
-import socket
-import sys
 import tempfile
 import threading
 import time
@@ -16,9 +14,9 @@ from zoneinfo import ZoneInfo
 
 # Paths. The macOS app sets HUD_ROOT (the bundled resources), HUD_STATE
 # (~/Library/Application Support/Waverly) and HUD_CONFIG (config.json in HUD_STATE).
-_DEFAULT_ROOT = "/opt/hud" if sys.platform.startswith("linux") else str(Path(__file__).resolve().parents[1])
-_DEFAULT_STATE = ("/var/lib/hud" if sys.platform.startswith("linux")
-                  else str(Path.home() / "Library" / "Application Support" / "Waverly"))
+# Run by hand from the repo, the defaults point at hud/ and the app's state folder.
+_DEFAULT_ROOT = str(Path(__file__).resolve().parents[1])
+_DEFAULT_STATE = str(Path.home() / "Library" / "Application Support" / "Waverly")
 ROOT = Path(os.environ.get("HUD_ROOT", _DEFAULT_ROOT))
 STATE = Path(os.environ.get("HUD_STATE", _DEFAULT_STATE))
 UI_DIR = Path(os.environ.get("HUD_UI", str(ROOT / "ui")))
@@ -241,7 +239,7 @@ def system_tz() -> ZoneInfo:
 
 
 def setup_logging(name: str) -> logging.Logger:
-    """Plain lines to stderr, plus (HUD_LOG_DIR set, as on macOS) a size-capped
+    """Plain lines to stderr, plus (HUD_LOG_DIR set, as the app does) a size-capped
     rotating file, so logs never fill the disk."""
     logging.basicConfig(level=logging.INFO, format=f"{name}: %(levelname)s %(message)s")
     log_dir = os.environ.get("HUD_LOG_DIR")
@@ -269,7 +267,7 @@ def watch_parent(log: logging.Logger, cleanup=None) -> None:
     def wait_gone():
         if os.getppid() != pid:
             return  # gone already (we were handed to launchd)
-        if hasattr(select, "kqueue"):  # macOS: told the moment it exits
+        if hasattr(select, "kqueue"):  # told the moment it exits
             kq = select.kqueue()
             try:
                 ev = select.kevent(pid, select.KQ_FILTER_PROC, select.KQ_EV_ADD | select.KQ_EV_ONESHOT,
@@ -321,18 +319,3 @@ def read_json(path: Path, default=None):
         return json.loads(path.read_text())
     except Exception:
         return default
-
-
-def sd_notify(msg: str) -> None:
-    """Minimal sd_notify so systemd's WatchdogSec can restart a hung service."""
-    addr = os.environ.get("NOTIFY_SOCKET")
-    if not addr:
-        return
-    if addr.startswith("@"):
-        addr = "\0" + addr[1:]
-    try:
-        with socket.socket(socket.AF_UNIX, socket.SOCK_DGRAM) as s:
-            s.connect(addr)
-            s.sendall(msg.encode())
-    except OSError:
-        pass

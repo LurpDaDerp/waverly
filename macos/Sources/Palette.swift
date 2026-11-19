@@ -1,6 +1,6 @@
 // Palette.swift — the ten label colours shared with hud-core and the page
-// (spec §3). Python and the page use the same ids; they draw the `dark` / `light`
-// tones, the Swift settings UI draws the `swatch` tone.
+// (PALETTE in hud/python/hud/common.py). Python and the page use the same ids;
+// they draw the `dark` / `light` tones, the Swift settings UI draws the `swatch` tone.
 
 import AppKit
 import SwiftUI

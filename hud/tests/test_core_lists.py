@@ -95,7 +95,7 @@ def test_defaults_are_neutral():
     assert (DEFAULTS["theme"], DEFAULTS["parallax"], DEFAULTS["weather_animation"], DEFAULTS["weather_detail"],
             DEFAULTS["scroll_reverse_vertical"], DEFAULTS["scroll_reverse_horizontal"]) == (
         "adaptive", True, True, "high", False, False)
-    assert (DEFAULTS["open_animation_s"], DEFAULTS["close_animation_s"]) == (1.0, 0.75)   # the original timing
+    assert (DEFAULTS["open_animation_s"], DEFAULTS["close_animation_s"]) == (1.0, 0.75)   # the default timing
 
 
 def test_merge_config_deep_merges_lists():

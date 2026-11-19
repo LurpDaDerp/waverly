@@ -3,8 +3,9 @@
 Prints every stroke (target, axis, net movement), every wake/close event and every
 wake decision with its confidence and palm orientation, plus the openness range and
 the palm's yaw / pitch per hand shape (with the share facing the camera). Use it to
-confirm a port behaves like the reference, or to calibrate on a new camera: record a
-clip of an open hand, a fist, scroll strokes and the wake/close gestures, then replay it.
+check a change to the gesture code against real footage, or to calibrate on a new
+camera: record a clip of an open hand, a fist, scroll strokes and the wake/close
+gestures, then replay it.
 
     python3 tools/replay_video.py calibration/scroll-strokes.mov [--asleep] [--lean 5] [--fps 12]
     python3 tools/replay_video.py calibration/open-hand-100.jpg   (a photo: replayed as 1 s of video)

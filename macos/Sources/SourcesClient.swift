@@ -1,5 +1,5 @@
 // SourcesClient.swift — the user's Google calendars and task lists, as hud-core
-// sees them (GET /api/sources, spec §4.2), for the Lists and Labels settings.
+// sees them (GET /api/sources), for the Lists and Labels settings.
 // hud-core may still be starting or fetching the metadata: "loading" and
 // "unavailable" answers are retried for a while on their own.
 

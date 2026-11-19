@@ -1,4 +1,4 @@
-// OnboardingWindow.swift — the setup wizard on first launch (spec §7): welcome,
+// OnboardingWindow.swift — the setup wizard on first launch: welcome,
 // name, permissions, preferences, Google Calendar, then "finishing setup" while
 // the Python environment installs in the background. Closing it before the end
 // quits Waverly; the next launch starts the wizard again. With `environmentOnly`
