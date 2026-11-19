@@ -13,3 +13,8 @@ docs/download/*.dmg
 docs/.vercel
 .vercel
 .env*
+
+# agent files (local only)
+CLAUDE.md
+.claude/
+AGENTS.md
