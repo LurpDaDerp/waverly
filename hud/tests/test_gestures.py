@@ -4,8 +4,9 @@ The scroll, close and wake scenarios were validated against the Linux HUD and mu
 pass unchanged. The wake-confidence scenarios (phantom hands on a face, flicker,
 the close-then-relax loop) were added with the hand evidence score. The palm
 orientation scenarios (head scratching edge-on, the back of the hand, tilted palms)
-were added with the facing requirement; since then a wave must also last longer
-(WAVE_SWINGS swings over WAVE_MIN_TIME), so the wave scenarios run a little longer.
+were added with the facing requirement. The wave is one sweep of the open hand across
+the camera's view (SWEEP_DIST of the width within SWEEP_TIME); a wrist wave in place
+(the earlier wave gesture) no longer wakes.
 
 Synthetic hands carry a realistic orientation: an open hand faces the camera at
 yaw +15, pitch +10 (real waving palms measured |yaw| ~10-20, pitch -20..+20), a fist
@@ -23,7 +24,7 @@ import sys
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "python"))
-from hud.gestures import (FIST, OTHER, PALM, WAKE_AFTER_CLOSE, WAVE_MIN_TIME, WAVE_SWINGS,  # noqa: E402
+from hud.gestures import (FIST, OTHER, PALM, SWEEP_DIST, SWEEP_TIME, WAKE_AFTER_CLOSE,  # noqa: E402
                           GestureEngine, HandObs, Seen)
 
 FPS = 30
@@ -178,23 +179,23 @@ check("wake: blurred fist moving into view (recognizer says fist) -> wake", w ==
 
 e = GestureEngine()
 t, out = 100.0, []
-for i in range(45):
-    x = 0.5 + 0.08 * math.sin(2 * math.pi * 2.4 * i / 30)
+for i in range(30):
+    x = 0.2 + 0.6 * min(i, 18) / 18
     ev, _ = e.update(t, [HandObs(x, 0.4, 0.15, PALM, 1.0, False, 0.98, yaw=FACING[0], pitch=FACING[1])], False, False)
     out += ev
     t += 1 / 30
-check("wake by waving ~1.5 s", "wake" in out, out)
+check("wake by one sweep across the view (0.6 s)", "wake" in out, out)
 e = GestureEngine()
 t, out = 100.0, []
-for i in range(60):
-    x = 0.5 + 0.12 * math.sin(2 * math.pi * 2.5 * i / 30)
+for i in range(30):
+    x = 0.2 + 0.6 * min(i, 24) / 24
     if i % 4 in (2, 3):
         t += 1 / 30
         continue
     ev, _ = e.update(t, [HandObs(x, 0.4, 0.15, PALM, 1.0, False, 0.98, yaw=FACING[0], pitch=FACING[1])], False, False)
     out += ev
     t += 1 / 30
-check("wake by waving with half the frames lost to blur", "wake" in out, out)
+check("wake by a sweep with half the frames lost to blur", "wake" in out, out)
 e = GestureEngine()
 t, out = 100.0, []
 for i in range(45):
@@ -232,32 +233,39 @@ def asleep_run(frames, fps=FPS, cfg=None):
 
 
 def wave_x(amp=0.08, hz=2.4, fps=FPS):
+    """A wrist wave in place: small side-to-side swings (the earlier wave gesture)."""
     return lambda k: 0.5 + amp * math.sin(2 * math.pi * hz * k / fps)
 
 
-w, e = asleep_run([(wave_x(), PALM, 0.98, 0.85, 1, 45)])
-check("wave with realistic evidence (0.85) wakes", "wake" in w, w)
+def sweep_x(lo=0.2, hi=0.8, secs=0.6, fps=FPS):
+    """Sweeps across the view: lo -> hi in secs, then back, and so on (starting at lo)."""
+    n = max(1, round(secs * fps))
+    return lambda k: lo + (hi - lo) * (1 - abs((k % (2 * n)) / n - 1))
+
+
+w, e = asleep_run([(sweep_x(), PALM, 0.98, 0.85, 1, 45)])
+check("sweep with realistic evidence (0.85) wakes", "wake" in w, w)
 check("an accepted wake is logged with its confidence",
       any(n.startswith("wake by wave accepted: confidence") for n in e.notes), e.notes[-1:])
-w, _ = asleep_run([(wave_x(), PALM, 0.98, 0.85, lambda k: -1 if k % 5 in (1, 3) else 1, 45)])
-check("wave whose handedness flips on 40% of frames (edge-on hand) still wakes", "wake" in w, w)
-w, _ = asleep_run([(wave_x(fps=15), PALM, 0.98, 0.85, 1, 23)], fps=15)
-check("wave at 15 fps (the camera's rate to the engine) wakes", "wake" in w, w)
+w, _ = asleep_run([(sweep_x(), PALM, 0.98, 0.85, lambda k: -1 if k % 5 in (1, 3) else 1, 45)])
+check("sweep whose handedness flips on 40% of frames (edge-on hand) still wakes", "wake" in w, w)
+w, _ = asleep_run([(sweep_x(fps=15), PALM, 0.98, 0.85, 1, 23)], fps=15)
+check("sweep at 15 fps (the camera's rate to the engine) wakes", "wake" in w, w)
 w, _ = asleep_run([(0.5, FIST, 0.08, 0.8, 1, 5), (0.5, OTHER, 0.6, 0.8, 1, 4), (0.5, PALM, 0.98, 0.8, 1, 5)])
 check("fist -> open with realistic evidence (0.8) wakes", w == ["prewake", "wake"], w)
 w, _ = asleep_run([(0.5, FIST, 0.08, 0.8, 1, 3), (0.5, OTHER, 0.6, 0.8, 1, 2), (0.5, PALM, 0.98, 0.8, 1, 4)], fps=15)
 check("quick fist -> open at 15 fps wakes", w == ["prewake", "wake"], w)
 
-w, e = asleep_run([(wave_x(amp=0.12), PALM, 0.98, 0.09, lambda k: 1 if k % 3 else -1, 150)])
-check("phantom hand on a face, swinging like a wave for 5 s -> nothing", w == [], w)
+w, e = asleep_run([(sweep_x(), PALM, 0.98, 0.09, lambda k: 1 if k % 3 else -1, 150)])
+check("phantom hand on a face, sweeping back and forth for 5 s -> nothing", w == [], w)
 check("rejected wake candidates are logged with gesture and score breakdown",
       any(n.startswith("wake by wave rejected: confidence 0.09") and "frames look like a hand" in n
           and "same hand" in n for n in e.notes), e.notes)
 check("rejections are rate-limited (one note per 2 s per kind)", 2 <= len(e.notes) <= 6, len(e.notes))
 w, _ = asleep_run([(0.5, FIST, 0.05, 0.09, 1, 10), (0.5, PALM, 0.98, 0.09, 1, 10)])
 check("phantom fist -> open on a face -> nothing (not even prewake)", w == [], w)
-w, _ = asleep_run([(wave_x(), PALM, 0.98, 0.45, 1, 60)])
-check("low-confidence detections (evidence 0.45) waving -> no wake", "wake" not in w and "prewake" not in w, w)
+w, _ = asleep_run([(sweep_x(), PALM, 0.98, 0.45, 1, 60)])
+check("low-confidence detections (evidence 0.45) sweeping -> no wake", "wake" not in w and "prewake" not in w, w)
 w, _ = asleep_run([(0.5, FIST, 0.05, 0.9, 1, 1), (0.5, None, 0, 0, 0, 45), (0.5, FIST, 0.05, 0.9, 1, 1),
                    (0.5, None, 0, 0, 0, 2), (0.5, PALM, 0.98, 0.9, 1, 1)])
 check("one-frame flickers: fist, 1.5 s later fist, then open -> nothing", w == [], w)
@@ -316,29 +324,29 @@ def wakes(w):
 
 
 for yaw in (60, 75, 90, -60, -90):
-    w, _ = asleep_run([(wave_x(), PALM, 0.98, 0.9, 1, 90, (yaw, 5.0))])
-    check(f"edge-on hand (yaw {yaw}) waving 3 s, like scratching the head sideways -> nothing", w == [], w)
+    w, _ = asleep_run([(sweep_x(), PALM, 0.98, 0.9, 1, 90, (yaw, 5.0))])
+    check(f"edge-on hand (yaw {yaw}) sweeping across for 3 s -> nothing", w == [], w)
 for pose_ in ((180.0, 0.0), (160.0, -10.0), (-150.0, 20.0)):
-    w, _ = asleep_run([(wave_x(), PALM, 0.98, 0.9, 1, 90, pose_)])
-    check(f"back of the hand (yaw {pose_[0]:.0f}) waving 3 s -> nothing", w == [], w)
-w, _ = asleep_run([(wave_x(), PALM, 0.98, 0.9, lambda k: -1 if k % 5 in (2, 3) else 1, 90, BACK)])
-check("back of the hand waving, its label flipping on 40% of frames (would read as a palm) -> nothing", w == [], w)
+    w, _ = asleep_run([(sweep_x(), PALM, 0.98, 0.9, 1, 90, pose_)])
+    check(f"back of the hand (yaw {pose_[0]:.0f}) sweeping across for 3 s -> nothing", w == [], w)
+w, _ = asleep_run([(sweep_x(), PALM, 0.98, 0.9, lambda k: -1 if k % 5 in (2, 3) else 1, 90, BACK)])
+check("back of the hand sweeping, its label flipping on 40% of frames (would read as a palm) -> nothing", w == [], w)
 for pitch in (60.0, -60.0):
-    w, _ = asleep_run([(wave_x(), PALM, 0.98, 0.9, 1, 90, (10.0, pitch))])
-    check(f"palm tilted {'up' if pitch > 0 else 'down'} 60 deg, waving 3 s -> nothing", w == [], w)
+    w, _ = asleep_run([(sweep_x(), PALM, 0.98, 0.9, 1, 90, (10.0, pitch))])
+    check(f"palm tilted {'up' if pitch > 0 else 'down'} 60 deg, sweeping 3 s -> nothing", w == [], w)
 for pose_ in ((35.0, 0.0), (0.0, 50.0)):
-    w, _ = asleep_run([(wave_x(), PALM, 0.98, 0.9, 1, 90, pose_)])
+    w, _ = asleep_run([(sweep_x(), PALM, 0.98, 0.9, 1, 90, pose_)])
     check(f"palm just outside the tolerance (yaw {pose_[0]:.0f}, pitch {pose_[1]:.0f}) -> no wake", not wakes(w), w)
 for pose_ in ((25.0, 40.0), (-25.0, -40.0), (25.0, -40.0), (-25.0, 40.0), (0.0, 0.0)):
-    w, e = asleep_run([(wave_x(), PALM, 0.98, 0.9, 1, 45, pose_)])
-    check(f"palm facing within tolerance (yaw {pose_[0]:+.0f}, pitch {pose_[1]:+.0f}) waving 1.5 s -> wake", wakes(w), w)
+    w, e = asleep_run([(sweep_x(), PALM, 0.98, 0.9, 1, 45, pose_)])
+    check(f"palm facing within tolerance (yaw {pose_[0]:+.0f}, pitch {pose_[1]:+.0f}) sweeping across -> wake", wakes(w), w)
     if pose_ == (25.0, 40.0):
         check("the wake log line gives the palm's yaw, pitch and facing share",
-              any(n.startswith("wake by wave accepted") and "palm facing 38 of 38 open frames (100%" in n
+              any(n.startswith("wake by wave accepted") and "open frames (100%, needs 50%)" in n
                   and "|yaw| median 25" in n and "pitch median +40" in n and "yaw/pitch now +25/+40" in n
                   for n in e.notes), [n for n in e.notes if n.startswith("wake")])
-w, e = asleep_run([(wave_x(), PALM, 0.98, 0.9, 1, 90, (75.0, 5.0))])
-check("a rejected wave is logged with the palm's orientation",
+w, e = asleep_run([(sweep_x(), PALM, 0.98, 0.9, 1, 90, (75.0, 5.0))])
+check("a rejected sweep is logged with the palm's orientation",
       any(n.startswith("wake by wave rejected") and "palm facing 0 of" in n and "|yaw| median 75" in n for n in e.notes),
       e.notes)
 
@@ -368,26 +376,44 @@ def flap(k, hz=2.0):
     return (15.0, 10.0) if math.cos(2 * math.pi * hz * k / FPS) > -0.2 else (150.0, -60.0)
 
 
-w, _ = asleep_run([(wave_x(amp=0.08, hz=2.0), PALM, 0.98, 0.9, 1, 60, flap)])
-check("a wave from the wrist (palm to the camera at the top of each flap) wakes", wakes(w), w)
+w, _ = asleep_run([(wave_x(amp=0.08, hz=2.0), PALM, 0.98, 0.9, 1, 90, flap)])
+check("a wrist wave in place for 3 s (the earlier wave gesture) -> no wake", not wakes(w), w)
+w, _ = asleep_run([(wave_x(amp=0.15, hz=1.5), PALM, 0.98, 0.9, 1, 90)])
+check("wide swings in place (0.3 of the width each way) for 3 s -> no wake", not wakes(w), w)
 
-# waving takes a little longer now: 4 swings over at least WAVE_MIN_TIME s
-w, _ = asleep_run([(wave_x(), PALM, 0.98, 0.9, 1, 24)])
-check("a quick 0.8 s wave (4 swings; 3 used to wake) -> no wake", not wakes(w), w)
+# the wave: one sweep across the view
 e = GestureEngine()
 t, woke = 100.0, None
-for k in range(60):
-    ev, _ = e.update(t, [HandObs(wave_x()(k), 0.5, 0.15, PALM, 1.0, False, 0.98, 0.9, 1, None, *FACING)], False, False)
+for k in range(30):
+    ev, _ = e.update(t, [HandObs(sweep_x()(min(k, 18)), 0.5, 0.15, PALM, 1.0, False, 0.98, 0.9, 1, None, *FACING)],
+                     False, False)
     if "wake" in ev and woke is None:
         woke = t - 100.0
     t += 1 / FPS
-check(f"the same wave kept up for 2 s wakes, after at least {WAVE_MIN_TIME} s and {WAVE_SWINGS} swings",
-      woke is not None and WAVE_MIN_TIME - 1e-6 <= woke <= WAVE_MIN_TIME + 0.2, woke)
-w, _ = asleep_run([(wave_x(hz=1.2), PALM, 0.98, 0.9, 1, 75)])
-check("a slow wave (1.2 Hz) for 2.5 s wakes", wakes(w), w)
-w, _ = asleep_run([(0.5, PALM, 0.98, 0.9, 1, 60), (lambda k: wave_x()(k - 60), PALM, 0.98, 0.9, 1, 24)])
-check("a palm held still for 2 s, then a quick 0.8 s wave -> no wake (the wave's time starts with the swinging)",
+check(f"one sweep 0.2 -> 0.8 in 0.6 s wakes as soon as it has gone {SWEEP_DIST} of the width (~0.4 s)",
+      woke is not None and 0.35 <= woke <= 0.45, woke)
+w, _ = asleep_run([(lambda k: 0.8 - 0.6 * min(k, 18) / 18, PALM, 0.98, 0.9, 1, 30)])
+check("one sweep the other way (right to left) wakes", wakes(w), w)
+w, _ = asleep_run([(0.5, PALM, 0.98, 0.9, 1, 60), (lambda k: 0.5 - 0.45 * min(k - 60, 15) / 15, PALM, 0.98, 0.9, 1, 25)])
+check("a palm held still for 2 s, then one sweep -> wake (the sweep starts where the hand rested)", wakes(w), w)
+w, _ = asleep_run([(lambda k: 0.35 + 0.3 * min(k, 12) / 12, PALM, 0.98, 0.9, 1, 30)])
+check("a short sweep (0.3 of the width) -> no wake", not wakes(w), w)
+w, _ = asleep_run([(lambda k: 0.1 + 0.8 * k / 90, PALM, 0.98, 0.9, 1, 90)])
+check(f"the hand drifting across the whole view over 3 s (slower than {SWEEP_DIST} in {SWEEP_TIME} s) -> no wake",
       not wakes(w), w)
+e = GestureEngine()
+t, out = 100.0, []
+for k in range(30):
+    f = min(k, 18) / 18
+    ev, _ = e.update(t, [HandObs(0.4 + 0.42 * f, 0.9 - 0.8 * f, 0.15, PALM, 1.0, False, 0.98, 0.9, 1, None, *FACING)],
+                     False, False)
+    out += ev
+    t += 1 / FPS
+check("the hand rising steeply across the view (more up than sideways) -> no wake", "wake" not in out, out)
+w, _ = asleep_run([(sweep_x(), FIST, 0.05, 0.9, 1, 45)])
+check("a fist swept across the view -> no wake by waving", "wake" not in w, w)
+w, _ = asleep_run([(sweep_x(), PALM, 0.98, 0.9, 1, 45, lambda k: FACING if k % 3 == 0 else (60.0, 5.0))])
+check("a sweep with the palm toward the camera on only a third of its frames -> no wake", not wakes(w), w)
 
 # fist -> open: the open hand must face the camera (the fist itself is exempt)
 for pose_ in ((80.0, 5.0), (-75.0, 0.0), (170.0, 0.0), (10.0, -65.0)):
@@ -553,25 +579,27 @@ def wrist_wave_10fps(k):
 frames = [(0.5, None, 0, 0, 0, 1) if wrist_wave_10fps(k) is None else
           (wrist_wave_10fps(k)[0], PALM, 0.98, 0.9, 1, 1, wrist_wave_10fps(k)[1]) for k in range(24)]
 w, _ = asleep_run(frames, fps=10)
-check("a wrist wave at 10 fps, detections alternating palm / back of the hand, 2.4 s -> wake", wakes(w), w)
-w, _ = asleep_run([(0.15 if k % 2 == 0 else 0.30, PALM, 0.98, 0.9, 1, 1, FACING if k % 4 == 0 else BACK)
-                   for k in range(24)], fps=10)
-check("... but with the palm shown on only a quarter of the frames -> no wake", not wakes(w), w)
-w, _ = asleep_run([(wave_x(fps=12), PALM, 0.98, 0.9, 1, 11), (0.5, None, 0, 0, 0, 6),
-                   (lambda k: wave_x(fps=12)(k - 6), PALM, 0.98, 0.9, 1, 11)], fps=12)
-check("a wave (12 fps) that blurs out of detection for 0.55 s halfway still wakes (0.9 s + 0.9 s)", wakes(w), w)
-w, _ = asleep_run([(wave_x(fps=12), PALM, 0.98, 0.9, 1, 11), (0.5, None, 0, 0, 0, 9),
-                   (lambda k: wave_x(fps=12)(k - 9), PALM, 0.98, 0.9, 1, 11)], fps=12)
-check("... but a 0.8 s gap splits it into two short waves -> no wake", not wakes(w), w)
+check("a wrist wave at 10 fps, detections alternating palm / back of the hand, 2.4 s -> no wake (not a sweep)",
+      not wakes(w), w)
+w, _ = asleep_run([(lambda k: 0.15 + 0.7 * min(k, 7) / 7, PALM, 0.98, 0.9, 1, 12)], fps=10)
+check("one sweep at 10 fps (0.7 s across) wakes", wakes(w), w)
+w, _ = asleep_run([(lambda k: 0.15 + 0.7 * min(k, 8) / 8, PALM, 0.98, 0.9, 1, 12)], fps=12)
+check("one sweep at 12 fps (0.67 s across) wakes", wakes(w), w)
+w, _ = asleep_run([(lambda k: 0.15 + 0.06 * k, PALM, 0.98, 0.9, 1, 3), (0.5, None, 0, 0, 0, 3),
+                   (lambda k: 0.15 + 0.06 * k, PALM, 0.98, 0.9, 1, 5)], fps=12)
+check("a sweep (12 fps) that blurs out of detection for 0.25 s halfway still wakes", wakes(w), w)
+w, _ = asleep_run([(lambda k: 0.15 + 0.06 * k, PALM, 0.98, 0.9, 1, 4), (0.5, None, 0, 0, 0, 9),
+                   (lambda k: 0.39 + 0.06 * (k - 13), PALM, 0.98, 0.9, 1, 5)], fps=12)
+check("... but a 0.75 s gap splits it into two short sweeps -> no wake", not wakes(w), w)
 
 # ---------------------------------------------------------------- gesture settings (Settings › Controls)
-WAVE = [(wave_x(), PALM, 0.98, 0.9, 1, 60)]
+WAVE = [(sweep_x(), PALM, 0.98, 0.9, 1, 60)]
 FIST_OPEN = [(0.5, FIST, 0.08, 0.9, 1, 5), (0.5, OTHER, 0.6, 0.9, 1, 4), (0.5, PALM, 0.98, 0.9, 1, 5)]
 CLOSE = [(0.98, 15), (0.5, 3), (0.02, 10)]
 DOWN_STROKE = [(0.5, 0.3, PALM, 0.98, 0.6), (0.5, lambda f: 0.3 + 0.4 * f, PALM, 0.98, 0.35), (0.5, 0.7, PALM, 0.98, 0.5)]
 
 w, _ = asleep_run(WAVE)
-check("settings default: a wave wakes", wakes(w), w)
+check("settings default: a sweep wakes", wakes(w), w)
 w, _ = asleep_run(WAVE, cfg={"gesture_open_wave": False})
 check("wave turned off: a wave wakes nothing, not even a prewake", w == [], w)
 w, _ = asleep_run(FIST_OPEN, cfg={"gesture_open_wave": False})
@@ -597,20 +625,26 @@ check("configure reports what changed", e.configure({"gesture_open_wave": False,
       == ["open_wave"] and e.configure({"gesture_open_wave": False}) == [], (e.open_wave, e.open_fist))
 check("configure: a missing key means on", e.configure({}) == ["open_wave"] and e.open_wave and e.close_fist)
 
-# turning the wave off halfway through a wave forgets its swings; on again, it starts afresh
+# turning the wave off halfway through a sweep forgets it; on again, a sweep starts afresh
+def toggled_x(i):
+    """Rest at 0.2, sweep to 0.8 (frames 20-38), rest, then sweep back to 0.2 (frames 60-78)."""
+    if i < 60:
+        return 0.2 + 0.6 * min(max(i - 20, 0), 18) / 18
+    return 0.8 - 0.6 * min(i - 60, 18) / 18
+
+
 e, t, out = GestureEngine(), 100.0, []
-for i in range(120):
-    if i == 30:
+for i in range(100):
+    if i == 26:
         e.configure({"gesture_open_wave": False})
-    if i == 50:
+    if i == 32:
         e.configure({"gesture_open_wave": True})
-    x = wave_x()(i)
-    ev, _ = e.update(t, [HandObs(x, 0.5, 0.15, PALM, 1.0, False, 0.98, 0.9, 1, None, *FACING)], False, False)
+    ev, _ = e.update(t, [HandObs(toggled_x(i), 0.5, 0.15, PALM, 1.0, False, 0.98, 0.9, 1, None, *FACING)], False, False)
     out += [(i, v) for v in ev]
     t += 1 / FPS
 first = next((i for i, v in out if v == "wake"), None)
-check("wave turned off mid-wave, then on: nothing while off, a fresh full wave wakes after",
-      first is not None and first >= 50 + int(WAVE_MIN_TIME * FPS) and all(i < 30 or i >= 50 for i, _ in out), out)
+check("wave turned off mid-sweep, then on: the rest of that sweep does not wake, a fresh full sweep does",
+      first is not None and 60 <= first <= 80 and all(i >= 60 for i, _ in out), out)
 
 # turning the close off between the fist's first frame and its second, then on again while
 # the fist is still held: it does not close (it starts again from an open hand)

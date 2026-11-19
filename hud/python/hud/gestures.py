@@ -17,7 +17,8 @@ Scrolling follows the hand:
   * A hand that disappears (fast motion blur) and reappears elsewhere never
     causes a jump: movement is only counted between detections close in time.
 
-Wake is forgiving (fist, then open hand; or a wave), but only for a real hand
+Wake is forgiving (fist, then open hand; or a wave: one sweep of the open hand
+across the camera's view), but only for a real hand
 showing its palm: every wake candidate gets a confidence from the frames of its
 gesture (how much each detection looks like a hand) and opens the HUD only above
 WAKE_CONFIDENCE, and only while the palm faces the camera (within FACING_YAW left /
@@ -150,13 +151,10 @@ class Track:
     stable: str | None = None
     segments: list = field(default_factory=list)
     fired_sleep_for: float = -1.0
-    fired_prewake_for: float = -1.0
-    # wave-to-wake: side-to-side swings of the hand
-    wave_dir: int = 0
-    wave_start: float = 0.0     # x where the current swing began
-    wave_ext: float = 0.0       # furthest x reached in the current swing
-    wave_from: float = 0.0      # when the current swing began
-    wave_swings: deque = field(default_factory=lambda: deque(maxlen=8))  # (end, start) times
+    # wave-to-wake: one sweep of the hand across the view
+    wave_dir: int = 0           # direction of the current sweep (+1 right, -1 left, 0 not moving yet)
+    wave_run: deque = field(default_factory=deque)  # (t, x, y) of the current sweep, oldest first
+    wave_ext: tuple = (0.0, 0.0, 0.0)               # (t, x, y) where it got furthest
     # scrolling
     px: float | None = None     # previous filtered position used for deltas
     py: float = 0.0
@@ -207,12 +205,12 @@ ARRIVAL = 0.35        # s after a hand appears during which up/down movement is 
 STROKE_END = 0.28    # s of no qualifying movement that ends a stroke
 SCROLL_OPEN = 0.92   # the hand must be at least 92% open to scroll
 
-WAVE_SWING = 0.06    # frame units: minimum side-to-side travel of one swing
-WAVE_SWINGS = 4      # swings needed to wake...
-WAVE_MIN_TIME = 1.2  # ...over at least this many seconds (from the start of the first swing)
-WAVE_WINDOW = 2.4    # s the swings must fall within (each swing's end, back from now)
-WAVE_GAP = 0.6       # s a waving hand may blur out of detection without losing the count (a wrist wave
-                     # loses the hand for ~0.5 s at the bottom of a flap at the app's 10-12 fps)
+SWEEP_DIST = 0.40    # wave: one sweep of the open hand across the camera's view, at least this far sideways
+                     # (frame widths; the hand model finds a hand from ~0.1 to ~0.9 of the width)...
+SWEEP_TIME = 1.2     # ...within this many seconds (slower is the hand drifting, not a wave)...
+SWEEP_SLOPE = 1.0    # ...and no more up / down than sideways (within 45 degrees of horizontal, in pixels)
+SWEEP_BACK = 0.04    # frame units the hand may move back without ending the sweep (jitter); more turns it
+WAVE_GAP = 0.6       # s a sweeping hand may blur out of detection without starting again
 
 WAKE_FIST = 0.20          # wake: a fist (20% open or less)...
 WAKE_FIST_HOLD = 0.0      # ...no hold: a single fist frame arms it...
@@ -250,28 +248,24 @@ PALM_STEADY = 0.3         # frame units / s over 150 ms: steadier counts as a he
 WAKE_CONFIDENCE = 0.6     # wake only at this confidence or more
 GOOD_FRAME = 0.5          # evidence for a frame to count as a good hand frame (and the average the open
                           # hand's last FIST_FACING_LAST frames need for a fist -> open wake)
-WAVE_MIN_FRAMES = 6       # good frames a wave needs (the engine gets 10-16 fps while a hand is in view)
+SWEEP_MIN_FRAMES = 4      # good frames a wave (one sweep) needs (the engine gets 10-16 fps with a hand in view)
 FIST_MIN_FRAMES = 4       # good frames from the start of the fist to the open hand
 PREWAKE_MIN_FRAMES = 3    # good frames before a prewake
 NOTE_EVERY = 2.0          # s between log notes about rejected candidates of one kind
 
 # Palm orientation. A wake only counts with the palm facing the camera: within FACING_YAW
 # degrees left / right and FACING_PITCH up / down (handfeatures.palm_orientation). A wave
-# must show the palm in every there-and-back cycle, on WAVE_FACING_SHARE of its frames and
-# on its last frames (it fires as the palm comes round to the camera); fist -> open must
-# end on a facing open hand (the fist itself is exempt: a fist shows no palm). Measured on
-# calibration/waving.mov: the user waves from the wrist, palm to the camera at the top of
-# each flap (|yaw| median 19, pitch -18..+14) and the back of the hand at the bottom, so
-# only 40-55% of a real wave's frames face the camera; a hand swept sideways palm-down or
-# edge-on faces on 4-13% (and misses whole cycles); a hand scratching the head, edge-on, ~0.
+# (one sweep across the view) must show the palm on SWEEP_FACING_SHARE of its frames; fist ->
+# open must end on a facing open hand (the fist itself is exempt: a fist shows no palm). A
+# palm held flat to the screen reads up to ~30 degrees of yaw near the frame's left and right
+# edges (it is seen from the side there), so a sweep is not asked to face on every frame. A
+# hand swept sideways palm-down or edge-on faces on 4-13% of its frames (measured on
+# calibration/waving.mov); a hand scratching the head, edge-on, ~0.
 # Check changes at the app's frame rate too (tools/replay_video.py --fps 12): the engine
 # sees 10-16 fps with a hand in view, and frame counts mean more time there.
 FACING_YAW = 30.0         # degrees left / right
 FACING_PITCH = 45.0       # degrees up / down
-WAVE_FACING_SHARE = 0.35  # share of a wave's frames (and of a wave prewake's) with the palm facing
-WAVE_FACING_LAST = 1      # the wave fires only on a frame with the palm facing the camera (the share and the
-                          # cycles above already ask for more; at the app's 10-12 fps a wrist wave's
-                          # detections alternate palm / back, so two facing frames in a row cut real waves)
+SWEEP_FACING_SHARE = 0.5  # share of a wave's frames with the palm facing
 FIST_FACING_LAST = 3      # fist -> open: the open hand's last 3 frames (fist frames before them do not
                           # count) face the camera, so one noisy frame right after the fist cannot wake
 FIST_AWAY_MAX = 0.35      # fist -> open: s in all the open hand may be turned away (|yaw| > FACING_YAW) since
@@ -328,7 +322,7 @@ class GestureEngine:
                 changed.append(attr)
         if not self.open_wave:
             # (last_seen too: turned back on, the wave starts from where the hand is then)
-            self.wave.wave_swings.clear()
+            self.wave.wave_run.clear()
             self.wave.wave_dir, self.wave.last_seen = 0, -1e9
         if not self.open_fist:
             self.wf_since, self.wf_ok, self.wf_prewoke = None, False, False
@@ -464,27 +458,19 @@ class GestureEngine:
                 if o is max(obs, key=lambda q: q.size):
                     self.seen.append(Seen(t, o.evidence, o.label, o.parts, o.yaw, o.pitch,
                                           o.openness <= WAKE_FIST or o.shape == FIST))
-                    # Wake by waving: side-to-side swings for a little over a second, palm to the camera.
+                    # Wake by waving: one sweep of the open hand across the view, palm to the camera.
+                    # (No prewake: the sweep is over in well under a second, and the wake itself
+                    # wakes the display.)
                     w = self.wave
-                    n = 0  # off: no swings, no events
                     if self.open_wave:
-                        n = self._wave(w, o, t, t - w.last_seen)
+                        since = self._sweep(w, o, t, t - w.last_seen)
                         w.last_seen = t
-                    since = w.wave_swings[0][1] if n else t
-                    # wave cycles: each pair of consecutive swings (there and back)
-                    cycles = [(a[1], b[0]) for a, b in zip(w.wave_swings, list(w.wave_swings)[1:])]
-                    if (n >= WAVE_SWINGS and t - since >= WAVE_MIN_TIME and t - self.last_sleep > WAKE_AFTER_CLOSE
-                            and t - self.last_wake > 2
-                            and self._sure("wave", "wake", since, t, WAVE_MIN_FRAMES, WAVE_FACING_SHARE,
-                                           WAVE_FACING_LAST, cycles)):
-                        events.append("wake")
-                        self.last_wake = t
-                        w.wave_swings.clear()
-                    elif (n >= WAVE_SWINGS - 1 and t - w.fired_prewake_for > 4 and t - self.last_wake > 2
-                            and self._sure("wave", "prewake", since, t, PREWAKE_MIN_FRAMES, WAVE_FACING_SHARE,
-                                           WAVE_FACING_LAST, cycles)):
-                        w.fired_prewake_for = t
-                        events.append("prewake")
+                        if (since is not None and t - self.last_sleep > WAKE_AFTER_CLOSE and t - self.last_wake > 2
+                                and self._sure("wave", "wake", since, t, SWEEP_MIN_FRAMES, SWEEP_FACING_SHARE)):
+                            events.append("wake")
+                            self.last_wake = t
+                            w.wave_run.clear()
+                            w.wave_dir = 0
                     # Wake: a fist held 0.1 s, then the hand opens to 95% within 1.5 s.
                     if self.open_fist:
                         self._fist_wake(o, t, events)
@@ -501,29 +487,43 @@ class GestureEngine:
         return events, msgs
 
     @staticmethod
-    def _wave(tr: Track, o: HandObs, t: float, gap: float) -> int:
-        """Count recent side-to-side swings of this hand (raw positions)."""
-        x = o.x
+    def _sweep(tr: Track, o: HandObs, t: float, gap: float) -> float | None:
+        """Follow the hand's current one-way sideways sweep (raw positions). Returns when
+        it began once it has gone SWEEP_DIST sideways within SWEEP_TIME (and no more up /
+        down than SWEEP_SLOPE allows), else None. A fist, or the hand lost for over
+        WAVE_GAP, starts again; moving back over SWEEP_BACK starts a sweep the other way
+        from the turn; a sweep keeps only its last SWEEP_TIME, so slow drift never adds up."""
+        run, p = tr.wave_run, (t, o.x, o.y)
+        if o.shape == FIST or o.openness <= WAKE_FIST:
+            run.clear()  # a fist is the other wake gesture, not a wave
+            tr.wave_dir = 0
+            return None
         if gap > WAVE_GAP:
-            tr.wave_dir, tr.wave_start, tr.wave_ext, tr.wave_from = 0, x, x, t
-            tr.wave_swings.clear()
-            return 0
-        if o.shape == FIST:  # a fist is the other wake gesture, not a wave
-            return len(tr.wave_swings)
+            run.clear()  # lost too long: start again from here
+            tr.wave_dir = 0
         if tr.wave_dir == 0:
-            if abs(x - tr.wave_start) > 0.02:
-                tr.wave_dir = 1 if x > tr.wave_start else -1
-                tr.wave_ext = x
-                tr.wave_from = t  # the first swing starts now, not when the hand came to rest
-        elif (x - tr.wave_ext) * tr.wave_dir >= 0:
-            tr.wave_ext = x
-        elif abs(x - tr.wave_ext) > 0.02:  # turned around
-            if abs(tr.wave_ext - tr.wave_start) >= WAVE_SWING:
-                tr.wave_swings.append((t, tr.wave_from))
-            tr.wave_start, tr.wave_ext, tr.wave_dir, tr.wave_from = tr.wave_ext, x, -tr.wave_dir, t
-        while tr.wave_swings and t - tr.wave_swings[0][0] > WAVE_WINDOW:
-            tr.wave_swings.popleft()
-        return len(tr.wave_swings)
+            run.append(p)  # not moving yet: a sweep starts from the oldest point (at most SWEEP_TIME back)
+            if abs(o.x - run[0][1]) > SWEEP_BACK:
+                tr.wave_dir = 1 if o.x > run[0][1] else -1
+                tr.wave_ext = p
+        elif (o.x - tr.wave_ext[1]) * tr.wave_dir >= 0:
+            tr.wave_ext = p
+            run.append(p)
+        elif abs(o.x - tr.wave_ext[1]) > SWEEP_BACK:  # turned back: a sweep the other way, from the turn
+            run.clear()
+            run.extend((tr.wave_ext, p))
+            tr.wave_dir, tr.wave_ext = -tr.wave_dir, p
+        else:
+            run.append(p)  # a little back (jitter): still the same sweep
+        while len(run) > 1 and t - run[0][0] > SWEEP_TIME:
+            run.popleft()
+        if not tr.wave_dir:
+            return None
+        t0, x0, y0 = run[0]
+        dx, dy = abs(tr.wave_ext[1] - x0), abs(tr.wave_ext[2] - y0)
+        if dx >= SWEEP_DIST and dy <= dx * ASPECT * SWEEP_SLOPE:
+            return t0
+        return None
 
     def _palm_hold(self, tr: Track, o: HandObs, t: float):
         """Track the unbroken stretch of a steady, fully open, camera-facing palm."""

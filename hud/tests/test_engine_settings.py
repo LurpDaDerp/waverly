@@ -53,11 +53,12 @@ def service(**kw):
 
 
 def wave(svc, t0, seconds=2.0, fps=30):
-    """Feed a palm-facing wave to the service's gesture engine (HUD closed); returns its events."""
-    import math
+    """Feed palm-facing sweeps across the view (0.2 <-> 0.8, 0.6 s each way) to the service's
+    gesture engine (HUD closed); returns its events."""
     out = []
+    n = round(0.6 * fps)
     for i in range(int(seconds * fps)):
-        x = 0.5 + 0.08 * math.sin(2 * math.pi * 2.4 * i / fps)
+        x = 0.2 + 0.6 * (1 - abs((i % (2 * n)) / n - 1))
         ev, _ = svc.engine.update(t0 + i / fps, [HandObs(x, 0.5, 0.15, PALM, 1.0, False, 0.98, 0.9, 1, None,
                                                          15.0, 10.0)], False, False)
         out += ev

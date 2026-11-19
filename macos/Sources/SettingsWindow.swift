@@ -488,7 +488,7 @@ private struct ControlsTab: View {
                     VStack(alignment: .leading, spacing: 0) {
                         GroupCaption(title: "Open with")
                         GlassPanel {
-                            SwitchRow(title: "Wave", detail: "Wave your hand, palm toward the camera",
+                            SwitchRow(title: "Wave", detail: "Sweep your open hand once across the camera, palm toward it",
                                       isOn: $config.gestureOpenWave)
                             PanelDivider()
                             SwitchRow(title: "Fist, then open hand", detail: "Make a fist, then open your hand toward the camera",

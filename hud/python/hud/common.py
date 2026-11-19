@@ -56,7 +56,7 @@ DEFAULTS = {
     "scroll_speed_horizontal": 1.0,
     # Which gestures open and close the HUD (Settings › Controls). With both open gestures
     # off, only the keyboard shortcut and the menu open it. hud-engine applies these live.
-    "gesture_open_wave": True,         # open by waving, palm to the camera
+    "gesture_open_wave": True,         # open by waving: one sweep across the camera, palm to it
     "gesture_open_fist": True,         # open by making a fist, then opening the hand
     "gesture_close_fist": True,        # close by making a fist (from an open palm)
     "auto_close_away": True,           # close when nobody has been seen for away_seconds
