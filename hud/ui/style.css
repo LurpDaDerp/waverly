@@ -327,6 +327,11 @@ body.asleep #stage { visibility: hidden; }
   mask-image: linear-gradient(90deg, transparent 0, #000 4rem, #000 calc(100% - 4rem), transparent 100%);
 }
 .vfade .track { padding: 1.75rem 0 4.5rem; }
+/* The schedule's rows reach 1.25rem past the list on each side (padding cancelled by a
+   negative margin, so the current event's highlight has room around its text). The
+   viewport clips at its padding box: widen it into the card's padding so the highlight's
+   sides and rounded corners are not cut off. The list itself stays where it was. */
+#schedule-vp { margin-inline: -1.5rem; padding-inline: 1.5rem; }
 
 /* gesture gauge: shows how far the hand is from where it settled */
 .gauge {
